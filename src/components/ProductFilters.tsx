@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface ProductFiltersProps {
   selectedGender: string;
@@ -11,7 +12,11 @@ interface ProductFiltersProps {
   setSelectedSizes: (sizes: string[]) => void;
   priceRange: number;
   setPriceRange: (price: number) => void;
+  sortBy: string;
+  setSortBy: (sort: string) => void;
   onClearFilters: () => void;
+  totalProducts: number;
+  filteredCount: number;
 }
 
 const ProductFilters = ({
@@ -23,7 +28,11 @@ const ProductFilters = ({
   setSelectedSizes,
   priceRange,
   setPriceRange,
-  onClearFilters
+  sortBy,
+  setSortBy,
+  onClearFilters,
+  totalProducts,
+  filteredCount
 }: ProductFiltersProps) => {
   const toggleSize = (size: string) => {
     setSelectedSizes(
@@ -33,9 +42,34 @@ const ProductFilters = ({
     );
   };
 
+  const hasActiveFilters = selectedGender !== 'all' || selectedCategory !== 'all' || 
+    selectedSizes.length > 0 || priceRange < 500;
+
   return (
     <div className="bg-white p-6 border border-gray-200 rounded-md h-fit">
-      <h3 className="font-oswald text-lg font-medium mb-5 uppercase tracking-wider">Filtrar Produtos</h3>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="font-oswald text-lg font-medium uppercase tracking-wider">Filtrar Produtos</h3>
+        <Badge variant="outline" className="font-roboto">
+          {filteredCount} de {totalProducts}
+        </Badge>
+      </div>
+
+      {/* Sort Options */}
+      <div className="mb-6">
+        <h4 className="font-oswald text-md font-medium mb-3 uppercase tracking-wider">Ordenar por</h4>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded font-roboto text-sm"
+        >
+          <option value="">Padrão</option>
+          <option value="price-asc">Menor Preço</option>
+          <option value="price-desc">Maior Preço</option>
+          <option value="name-asc">Nome A-Z</option>
+          <option value="rating-desc">Melhor Avaliação</option>
+          <option value="newest">Mais Novos</option>
+        </select>
+      </div>
       
       {/* Gender Filter */}
       <div className="mb-6">
@@ -107,6 +141,15 @@ const ProductFilters = ({
             </button>
           ))}
         </div>
+        {selectedSizes.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {selectedSizes.map(size => (
+              <Badge key={size} variant="secondary" className="text-xs">
+                {size}
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Price Filter */}
@@ -120,15 +163,20 @@ const ProductFilters = ({
           onChange={(e) => setPriceRange(Number(e.target.value))}
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
         />
-        <p className="text-sm text-gray-600 mt-2 font-roboto">Max: R${priceRange}</p>
+        <div className="flex justify-between text-xs text-gray-600 mt-2 font-roboto">
+          <span>R$ 0</span>
+          <span>R$ {priceRange}</span>
+          <span>R$ 500+</span>
+        </div>
       </div>
       
       <Button 
         onClick={onClearFilters}
         variant="outline" 
         className="w-full mt-4 font-roboto font-medium uppercase tracking-wider"
+        disabled={!hasActiveFilters}
       >
-        Limpar Filtros
+        Limpar Filtros {hasActiveFilters && `(${filteredCount})`}
       </Button>
     </div>
   );

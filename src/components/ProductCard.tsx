@@ -19,6 +19,7 @@ interface Product {
   gender: string;
   rating?: number;
   reviewsCount?: number;
+  availableSizes?: Record<string, number>;
 }
 
 interface ProductCardProps {
@@ -38,6 +39,9 @@ const ProductCard = ({
   onShowReviews,
   isInWishlist 
 }: ProductCardProps) => {
+  const isOutOfStock = product.availableSizes && 
+    Object.values(product.availableSizes).every(stock => stock === 0);
+
   return (
     <Card className="group cursor-pointer border-0 shadow-none bg-transparent overflow-hidden">
       <div className="relative overflow-hidden">
@@ -45,7 +49,11 @@ const ProductCard = ({
           <img 
             src={product.image} 
             alt={product.name}
-            className="w-full h-80 md:h-96 object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
+            className={`w-full h-80 md:h-96 object-cover transition-all duration-300 ${
+              isOutOfStock 
+                ? 'filter grayscale opacity-50' 
+                : 'filter grayscale group-hover:grayscale-0'
+            }`}
             loading="lazy"
           />
         </Link>
@@ -57,6 +65,9 @@ const ProductCard = ({
           )}
           {product.sale && (
             <span className="bg-red-600 text-white px-3 py-1 text-xs font-bold rounded font-roboto uppercase">OFERTA</span>
+          )}
+          {isOutOfStock && (
+            <span className="bg-gray-600 text-white px-3 py-1 text-xs font-bold rounded font-roboto uppercase">ESGOTADO</span>
           )}
         </div>
 
@@ -87,15 +98,17 @@ const ProductCard = ({
         </div>
 
         {/* Quick add to cart */}
-        <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <Button 
-            onClick={() => onAddToCart(product)}
-            className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs"
-          >
-            <ShoppingBag className="w-4 h-4 mr-2" />
-            ADICIONAR AO CARRINHO
-          </Button>
-        </div>
+        {!isOutOfStock && (
+          <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <Button 
+              onClick={() => onAddToCart(product)}
+              className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs"
+            >
+              <ShoppingBag className="w-4 h-4 mr-2" />
+              ADICIONAR AO CARRINHO
+            </Button>
+          </div>
+        )}
       </div>
 
       <CardContent className="p-0 pt-4">
@@ -130,7 +143,7 @@ const ProductCard = ({
         )}
         
         <div className="flex items-center space-x-2">
-          <span className="text-lg font-roboto font-bold">
+          <span className={`text-lg font-roboto font-bold ${isOutOfStock ? 'text-gray-500' : ''}`}>
             R$ {product.price.toFixed(2).replace('.', ',')}
           </span>
           {product.originalPrice && (
@@ -141,9 +154,18 @@ const ProductCard = ({
         </div>
         
         {/* Installments */}
-        <p className="text-xs text-gray-600 font-roboto mt-1">
-          ou 10x de R$ {(product.price / 10).toFixed(2).replace('.', ',')} sem juros
-        </p>
+        {!isOutOfStock && (
+          <p className="text-xs text-gray-600 font-roboto mt-1">
+            ou 10x de R$ {(product.price / 10).toFixed(2).replace('.', ',')} sem juros
+          </p>
+        )}
+
+        {/* Stock status */}
+        {isOutOfStock && (
+          <p className="text-xs text-red-600 font-roboto mt-1 font-medium">
+            Produto indisponível
+          </p>
+        )}
       </CardContent>
     </Card>
   );
