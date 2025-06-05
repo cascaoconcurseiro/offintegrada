@@ -1,14 +1,14 @@
 
 import React from 'react';
 import Header from '@/components/Header';
-import ShopPage from '@/components/ShopPage';
+import ShopPageRefactored from '@/components/ShopPageRefactored';
 import Footer from '@/components/Footer';
 
 const ShopPageRoute = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <ShopPage />
+      <ShopPageRefactored />
       <Footer />
     </div>
   );

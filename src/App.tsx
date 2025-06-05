@@ -13,6 +13,7 @@ import SizeGuidePage from "./pages/SizeGuidePage";
 import FAQPage from "./pages/FAQPage";
 import AccountPage from "./pages/AccountPage";
 import ShopPageRoute from "./pages/ShopPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import CartModal from "@/components/CartModal";
 
@@ -29,6 +30,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/loja" element={<ShopPageRoute />} />
+              <Route path="/produto/:id" element={<ProductDetailPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/revendedor" element={<ResellerPage />} />
               <Route path="/guia-tamanhos" element={<SizeGuidePage />} />
