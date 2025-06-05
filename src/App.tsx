@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
+import { WishlistProvider } from "@/contexts/WishlistContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ResellerPage from "./pages/ResellerPage";
@@ -22,22 +23,24 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <CartProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/loja" element={<ShopPageRoute />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/revendedor" element={<ResellerPage />} />
-            <Route path="/guia-tamanhos" element={<SizeGuidePage />} />
-            <Route path="/faq" element={<FAQPage />} />
-            <Route path="/conta" element={<AccountPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <CartModal />
-        </BrowserRouter>
-      </CartProvider>
+      <WishlistProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/loja" element={<ShopPageRoute />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/revendedor" element={<ResellerPage />} />
+              <Route path="/guia-tamanhos" element={<SizeGuidePage />} />
+              <Route path="/faq" element={<FAQPage />} />
+              <Route path="/conta" element={<AccountPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <CartModal />
+          </BrowserRouter>
+        </CartProvider>
+      </WishlistProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

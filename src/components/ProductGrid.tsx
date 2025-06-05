@@ -1,13 +1,19 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingBag, Eye, Star } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { toast } from '@/hooks/use-toast';
+import ProductQuickView from '@/components/ProductQuickView';
+import ProductReviews from '@/components/ProductReviews';
 
 const ProductGrid = () => {
   const { addItem } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const [quickViewProduct, setQuickViewProduct] = useState<any>(null);
+  const [reviewsProduct, setReviewsProduct] = useState<any>(null);
 
   const products = [
     {
@@ -19,7 +25,14 @@ const ProductGrid = () => {
       sizes: ["P", "M", "G", "GG"],
       colors: ["Preto", "Branco"],
       isNew: true,
-      sale: true
+      sale: true,
+      category: "regata",
+      gender: "masculino",
+      description: "Leveza e respirabilidade para seus treinos mais intensos. Tecido Dry Fit que afasta o suor.",
+      composition: "90% Poliamida, 10% Elastano",
+      care: "Lavar à máquina com água fria. Não usar alvejante. Secar à sombra.",
+      rating: 4.5,
+      reviewsCount: 15
     },
     {
       id: 2,
@@ -29,7 +42,14 @@ const ProductGrid = () => {
       sizes: ["P", "M", "G"],
       colors: ["Preto", "Azul"],
       isNew: false,
-      sale: false
+      sale: false,
+      category: "camiseta",
+      gender: "masculino",
+      description: "Conforto e liberdade de movimentos. Ideal para musculação e treinos funcionais.",
+      composition: "100% Algodão Orgânico",
+      care: "Lavar delicadamente. Não torcer.",
+      rating: 5,
+      reviewsCount: 22
     },
     {
       id: 3,
@@ -39,7 +59,14 @@ const ProductGrid = () => {
       sizes: ["P", "M", "G"],
       colors: ["Preto", "Cinza"],
       isNew: true,
-      sale: false
+      sale: false,
+      category: "shorts",
+      gender: "masculino",
+      description: "Shorts leve com bolsos estratégicos para corrida e treinos ao ar livre.",
+      composition: "100% Poliéster Reciclado",
+      care: "Lavar com cores similares.",
+      rating: 4,
+      reviewsCount: 8
     },
     {
       id: 4,
@@ -50,7 +77,14 @@ const ProductGrid = () => {
       sizes: ["P", "M", "G"],
       colors: ["Preto", "Rosa"],
       isNew: false,
-      sale: true
+      sale: true,
+      category: "legging",
+      gender: "feminino",
+      description: "Alta compressão para suporte muscular e modelagem perfeita. Cintura alta para maior conforto.",
+      composition: "78% Poliamida, 22% Elastano",
+      care: "Não passar o ferro sobre a estampa.",
+      rating: 4.8,
+      reviewsCount: 30
     },
     {
       id: 5,
@@ -60,7 +94,14 @@ const ProductGrid = () => {
       sizes: ["P", "M", "G"],
       colors: ["Preto", "Branco"],
       isNew: false,
-      sale: false
+      sale: false,
+      category: "top",
+      gender: "feminino",
+      description: "Top com alta sustentação, ideal para atividades de impacto. Design moderno e confortável.",
+      composition: "85% Poliamida, 15% Elastano",
+      care: "Secar à sombra.",
+      rating: 4.2,
+      reviewsCount: 12
     },
     {
       id: 6,
@@ -70,7 +111,14 @@ const ProductGrid = () => {
       sizes: ["P", "M", "G", "GG"],
       colors: ["Preto", "Cinza"],
       isNew: true,
-      sale: false
+      sale: false,
+      category: "agasalho",
+      gender: "unissex",
+      description: "Conjunto de agasalho com tecido tecnológico, perfeito para aquecimento e pós-treino.",
+      composition: "60% Algodão, 40% Poliéster",
+      care: "Lavar do avesso.",
+      rating: 4.6,
+      reviewsCount: 18
     }
   ];
 
@@ -90,77 +138,168 @@ const ProductGrid = () => {
     });
   };
 
+  const handleWishlistToggle = (product: any) => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+      toast({
+        title: "Removido da lista de desejos",
+        description: `${product.name} foi removido da sua lista de desejos.`,
+      });
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+        gender: product.gender
+      });
+      toast({
+        title: "Adicionado à lista de desejos",
+        description: `${product.name} foi adicionado à sua lista de desejos.`,
+      });
+    }
+  };
+
   return (
-    <section className="py-12 md:py-20 bg-gray-100">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-left mb-10 md:mb-14">
-          <h2 className="text-3xl md:text-4xl font-oswald font-medium mb-4 uppercase tracking-wider">
-            Mais Vendidos
-          </h2>
-          <p className="mt-1 text-gray-600 font-roboto font-light tracking-wider text-sm">
-            Os favoritos da comunidade OFFSEASON.
-          </p>
-        </div>
+    <>
+      <section className="py-12 md:py-20 bg-gray-100">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-left mb-10 md:mb-14">
+            <h2 className="text-3xl md:text-4xl font-oswald font-medium mb-4 uppercase tracking-wider">
+              Mais Vendidos
+            </h2>
+            <p className="mt-1 text-gray-600 font-roboto font-light tracking-wider text-sm">
+              Os favoritos da comunidade OFFSEASON.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 md:gap-x-5 gap-y-8 md:gap-y-12">
-          {products.map((product) => (
-            <Card key={product.id} className="group cursor-pointer border-0 shadow-none bg-transparent overflow-hidden">
-              <div className="relative overflow-hidden">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-80 md:h-96 object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                />
-                
-                {/* Badges */}
-                <div className="absolute top-4 left-4 space-y-2">
-                  {product.isNew && (
-                    <span className="bg-green-600 text-white px-3 py-1 text-xs font-bold rounded font-roboto uppercase">NOVO</span>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 md:gap-x-5 gap-y-8 md:gap-y-12">
+            {products.map((product) => (
+              <Card key={product.id} className="group cursor-pointer border-0 shadow-none bg-transparent overflow-hidden">
+                <div className="relative overflow-hidden">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-80 md:h-96 object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                  />
+                  
+                  {/* Badges */}
+                  <div className="absolute top-4 left-4 space-y-2">
+                    {product.isNew && (
+                      <span className="bg-green-600 text-white px-3 py-1 text-xs font-bold rounded font-roboto uppercase">NOVO</span>
+                    )}
+                    {product.sale && (
+                      <span className="bg-red-600 text-white px-3 py-1 text-xs font-bold rounded font-roboto uppercase">OFERTA</span>
+                    )}
+                  </div>
+
+                  {/* Hover actions */}
+                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="bg-white/80 hover:bg-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleWishlistToggle(product);
+                      }}
+                    >
+                      <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current text-red-500' : ''}`} />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="bg-white/80 hover:bg-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setQuickViewProduct(product);
+                      }}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  {/* Quick add to cart */}
+                  <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Button 
+                      onClick={() => handleAddToCart(product)}
+                      className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs"
+                    >
+                      <ShoppingBag className="w-4 h-4 mr-2" />
+                      ADICIONAR AO CARRINHO
+                    </Button>
+                  </div>
+                </div>
+
+                <CardContent className="p-0 pt-4">
+                  <h3 className="font-roboto font-medium text-base mb-2 uppercase tracking-wider">{product.name}</h3>
+                  
+                  {/* Rating */}
+                  {product.rating && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-3 h-3 ${
+                              i < Math.floor(product.rating!) 
+                                ? 'fill-yellow-400 text-yellow-400' 
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => setReviewsProduct(product)}
+                        className="text-xs text-gray-600 font-roboto hover:underline"
+                      >
+                        ({product.reviewsCount})
+                      </button>
+                    </div>
                   )}
-                  {product.sale && (
-                    <span className="bg-red-600 text-white px-3 py-1 text-xs font-bold rounded font-roboto uppercase">OFERTA</span>
-                  )}
-                </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg font-roboto font-bold">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+                    {product.originalPrice && (
+                      <span className="text-gray-500 line-through font-roboto">R$ {product.originalPrice.toFixed(2).replace('.', ',')}</span>
+                    )}
+                  </div>
+                  
+                  {/* Installments */}
+                  <p className="text-xs text-gray-600 font-roboto mt-1">
+                    ou 10x de R$ {(product.price / 10).toFixed(2).replace('.', ',')} sem juros
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-                {/* Hover actions */}
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Button variant="ghost" size="icon" className="bg-white/80 hover:bg-white mb-2">
-                    <Heart className="w-4 h-4" />
-                  </Button>
-                </div>
-
-                {/* Quick add to cart */}
-                <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Button 
-                    onClick={() => handleAddToCart(product)}
-                    className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs"
-                  >
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    ADICIONAR AO CARRINHO
-                  </Button>
-                </div>
-              </div>
-
-              <CardContent className="p-0 pt-4">
-                <h3 className="font-roboto font-medium text-base mb-2 uppercase tracking-wider">{product.name}</h3>
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg font-roboto font-bold">R$ {product.price.toFixed(2).replace('.', ',')}</span>
-                  {product.originalPrice && (
-                    <span className="text-gray-500 line-through font-roboto">R$ {product.originalPrice.toFixed(2).replace('.', ',')}</span>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <div className="text-center mt-12">
+            <Button size="lg" variant="outline" className="px-12 font-roboto font-medium uppercase tracking-wider">
+              VER TODOS OS PRODUTOS
+            </Button>
+          </div>
         </div>
+      </section>
 
-        <div className="text-center mt-12">
-          <Button size="lg" variant="outline" className="px-12 font-roboto font-medium uppercase tracking-wider">
-            VER TODOS OS PRODUTOS
-          </Button>
-        </div>
-      </div>
-    </section>
+      {/* Quick View Modal */}
+      <ProductQuickView
+        product={quickViewProduct}
+        isOpen={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+      />
+
+      {/* Reviews Modal */}
+      {reviewsProduct && (
+        <ProductReviews
+          productId={reviewsProduct.id}
+          productName={reviewsProduct.name}
+          isOpen={!!reviewsProduct}
+          onClose={() => setReviewsProduct(null)}
+        />
+      )}
+    </>
   );
 };
 

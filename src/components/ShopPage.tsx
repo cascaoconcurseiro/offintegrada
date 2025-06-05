@@ -1,18 +1,26 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingBag, Eye, Star } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { toast } from '@/hooks/use-toast';
+import ProductQuickView from '@/components/ProductQuickView';
+import ProductReviews from '@/components/ProductReviews';
 
 const ShopPage = () => {
   const [selectedGender, setSelectedGender] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState(500);
+  const [sortBy, setSortBy] = useState('default');
+  const [quickViewProduct, setQuickViewProduct] = useState<any>(null);
+  const [reviewsProduct, setReviewsProduct] = useState<any>(null);
 
   const { addItem } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const products = [
     {
@@ -23,10 +31,19 @@ const ShopPage = () => {
       price: 89.90,
       originalPrice: 119.90,
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=500&fit=crop&crop=center",
+      images: [
+        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=500&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1583743814966-8936f37f8e8c?w=400&h=500&fit=crop&crop=center"
+      ],
       sizes: ["P", "M", "G", "GG"],
       colors: ["Preto", "Branco", "Cinza"],
       isNew: true,
-      sale: true
+      sale: true,
+      description: "Leveza e respirabilidade para seus treinos mais intensos. Tecido Dry Fit que afasta o suor.",
+      composition: "90% Poliamida, 10% Elastano",
+      care: "Lavar à máquina com água fria. Não usar alvejante. Secar à sombra.",
+      rating: 4.5,
+      reviewsCount: 15
     },
     {
       id: 2,
@@ -38,7 +55,12 @@ const ShopPage = () => {
       sizes: ["P", "M", "G"],
       colors: ["Preto", "Azul"],
       isNew: false,
-      sale: false
+      sale: false,
+      description: "Conforto e liberdade de movimentos. Ideal para musculação e treinos funcionais.",
+      composition: "100% Algodão Orgânico",
+      care: "Lavar delicadamente. Não torcer.",
+      rating: 5,
+      reviewsCount: 22
     },
     {
       id: 3,
@@ -51,7 +73,12 @@ const ShopPage = () => {
       sizes: ["P", "M", "G"],
       colors: ["Preto", "Rosa"],
       isNew: false,
-      sale: true
+      sale: true,
+      description: "Alta compressão para suporte muscular e modelagem perfeita. Cintura alta para maior conforto.",
+      composition: "78% Poliamida, 22% Elastano",
+      care: "Não passar o ferro sobre a estampa.",
+      rating: 4.8,
+      reviewsCount: 30
     },
     {
       id: 4,
@@ -63,7 +90,12 @@ const ShopPage = () => {
       sizes: ["P", "M", "G"],
       colors: ["Preto", "Branco"],
       isNew: true,
-      sale: false
+      sale: false,
+      description: "Top com alta sustentação, ideal para atividades de impacto. Design moderno e confortável.",
+      composition: "85% Poliamida, 15% Elastano",
+      care: "Secar à sombra.",
+      rating: 4.2,
+      reviewsCount: 12
     }
   ];
 
@@ -73,14 +105,37 @@ const ShopPage = () => {
       name: product.name,
       price: product.price,
       image: product.image,
-      size: product.sizes[0], // Default to first size
-      color: product.colors[0] // Default to first color
+      size: product.sizes[0],
+      color: product.colors[0]
     });
     
     toast({
       title: "Produto adicionado!",
       description: `${product.name} foi adicionado ao carrinho.`,
     });
+  };
+
+  const handleWishlistToggle = (product: any) => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+      toast({
+        title: "Removido da lista de desejos",
+        description: `${product.name} foi removido da sua lista de desejos.`,
+      });
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+        gender: product.gender
+      });
+      toast({
+        title: "Adicionado à lista de desejos",
+        description: `${product.name} foi adicionado à sua lista de desejos.`,
+      });
+    }
   };
 
   const toggleSize = (size: string) => {
@@ -98,14 +153,31 @@ const ShopPage = () => {
     setPriceRange(500);
   };
 
-  const filteredProducts = products.filter(product => {
+  const sortProducts = (products: any[]) => {
+    switch (sortBy) {
+      case 'price-asc':
+        return [...products].sort((a, b) => a.price - b.price);
+      case 'price-desc':
+        return [...products].sort((a, b) => b.price - a.price);
+      case 'name-asc':
+        return [...products].sort((a, b) => a.name.localeCompare(b.name));
+      case 'name-desc':
+        return [...products].sort((a, b) => b.name.localeCompare(a.name));
+      case 'rating':
+        return [...products].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      default:
+        return products;
+    }
+  };
+
+  const filteredProducts = sortProducts(products.filter(product => {
     const genderMatch = selectedGender === 'all' || product.gender === selectedGender;
     const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
     const priceMatch = product.price <= priceRange;
     const sizeMatch = selectedSizes.length === 0 || selectedSizes.some(size => product.sizes.includes(size));
     
     return genderMatch && categoryMatch && priceMatch && sizeMatch;
-  });
+  }));
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
@@ -215,7 +287,7 @@ const ShopPage = () => {
             <h2 className="text-2xl md:text-3xl font-oswald font-medium uppercase tracking-wider">
               Todos os Produtos ({filteredProducts.length})
             </h2>
-            <Select>
+            <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Ordenar por" />
               </SelectTrigger>
@@ -225,6 +297,7 @@ const ShopPage = () => {
                 <SelectItem value="price-desc">Preço: Maior para Menor</SelectItem>
                 <SelectItem value="name-asc">Nome: A-Z</SelectItem>
                 <SelectItem value="name-desc">Nome: Z-A</SelectItem>
+                <SelectItem value="rating">Melhor Avaliados</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -252,9 +325,28 @@ const ShopPage = () => {
                     </div>
 
                     {/* Hover actions */}
-                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <Button variant="ghost" size="icon" className="bg-white/80 hover:bg-white mb-2">
-                        <Heart className="w-4 h-4" />
+                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="bg-white/80 hover:bg-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleWishlistToggle(product);
+                        }}
+                      >
+                        <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current text-red-500' : ''}`} />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="bg-white/80 hover:bg-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setQuickViewProduct(product);
+                        }}
+                      >
+                        <Eye className="w-4 h-4" />
                       </Button>
                     </div>
 
@@ -272,12 +364,42 @@ const ShopPage = () => {
 
                   <CardContent className="p-0 pt-4">
                     <h3 className="font-roboto font-medium text-base mb-2 uppercase tracking-wider">{product.name}</h3>
+                    
+                    {/* Rating */}
+                    {product.rating && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-3 h-3 ${
+                                i < Math.floor(product.rating!) 
+                                  ? 'fill-yellow-400 text-yellow-400' 
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => setReviewsProduct(product)}
+                          className="text-xs text-gray-600 font-roboto hover:underline"
+                        >
+                          ({product.reviewsCount})
+                        </button>
+                      </div>
+                    )}
+                    
                     <div className="flex items-center space-x-2">
                       <span className="text-lg font-roboto font-bold">R$ {product.price.toFixed(2).replace('.', ',')}</span>
                       {product.originalPrice && (
                         <span className="text-gray-500 line-through font-roboto">R$ {product.originalPrice.toFixed(2).replace('.', ',')}</span>
                       )}
                     </div>
+                    
+                    {/* Installments */}
+                    <p className="text-xs text-gray-600 font-roboto mt-1">
+                      ou 10x de R$ {(product.price / 10).toFixed(2).replace('.', ',')} sem juros
+                    </p>
                   </CardContent>
                 </Card>
               ))}
@@ -292,6 +414,23 @@ const ShopPage = () => {
           )}
         </main>
       </div>
+
+      {/* Quick View Modal */}
+      <ProductQuickView
+        product={quickViewProduct}
+        isOpen={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+      />
+
+      {/* Reviews Modal */}
+      {reviewsProduct && (
+        <ProductReviews
+          productId={reviewsProduct.id}
+          productName={reviewsProduct.name}
+          isOpen={!!reviewsProduct}
+          onClose={() => setReviewsProduct(null)}
+        />
+      )}
     </div>
   );
 };
