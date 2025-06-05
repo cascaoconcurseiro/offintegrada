@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,16 +25,18 @@ const Header = () => {
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-4xl font-oswald font-bold text-black tracking-wider uppercase">
-              OFFSEASON
-            </h1>
+            <Link to="/">
+              <h1 className="text-4xl font-oswald font-bold text-black tracking-wider uppercase">
+                OFFSEASON
+              </h1>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-black hover:bg-gray-100 block py-2 font-roboto font-medium uppercase tracking-wider text-sm transition-colors">
+            <Link to="/loja" className="text-black hover:bg-gray-100 block py-2 font-roboto font-medium uppercase tracking-wider text-sm transition-colors">
               NOVIDADES
-            </a>
+            </Link>
             
             {/* Dropdown Masculino */}
             <div 
@@ -41,15 +44,15 @@ const Header = () => {
               onMouseEnter={() => setHoveredCategory('masculino')}
               onMouseLeave={() => setHoveredCategory(null)}
             >
-              <a href="#" className="text-black hover:bg-gray-100 block py-2 font-roboto font-medium uppercase tracking-wider text-sm transition-colors inline-flex items-center">
+              <Link to="/loja" className="text-black hover:bg-gray-100 block py-2 font-roboto font-medium uppercase tracking-wider text-sm transition-colors inline-flex items-center">
                 MASCULINO <ChevronDown className="ml-1 w-4 h-4" />
-              </a>
+              </Link>
               {hoveredCategory === 'masculino' && (
                 <div className="absolute top-full left-0 bg-white shadow-lg border mt-1 w-48 z-50">
                   {categories.masculino.map((item) => (
-                    <a key={item} href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-roboto">
+                    <Link key={item} to="/loja" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-roboto">
                       {item}
-                    </a>
+                    </Link>
                   ))}
                 </div>
               )}
@@ -61,26 +64,26 @@ const Header = () => {
               onMouseEnter={() => setHoveredCategory('feminino')}
               onMouseLeave={() => setHoveredCategory(null)}
             >
-              <a href="#" className="text-black hover:bg-gray-100 block py-2 font-roboto font-medium uppercase tracking-wider text-sm transition-colors inline-flex items-center">
+              <Link to="/loja" className="text-black hover:bg-gray-100 block py-2 font-roboto font-medium uppercase tracking-wider text-sm transition-colors inline-flex items-center">
                 FEMININO <ChevronDown className="ml-1 w-4 h-4" />
-              </a>
+              </Link>
               {hoveredCategory === 'feminino' && (
                 <div className="absolute top-full left-0 bg-white shadow-lg border mt-1 w-48 z-50">
                   {categories.feminino.map((item) => (
-                    <a key={item} href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-roboto">
+                    <Link key={item} to="/loja" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-roboto">
                       {item}
-                    </a>
+                    </Link>
                   ))}
                 </div>
               )}
             </div>
 
-            <a href="#" className="text-black hover:bg-gray-100 block py-2 font-roboto font-medium uppercase tracking-wider text-sm transition-colors">
+            <Link to="/loja" className="text-black hover:bg-gray-100 block py-2 font-roboto font-medium uppercase tracking-wider text-sm transition-colors">
               OUTLET
-            </a>
-            <a href="#" className="text-black hover:bg-gray-100 block py-2 font-roboto font-medium uppercase tracking-wider text-sm transition-colors">
+            </Link>
+            <Link to="/faq" className="text-black hover:bg-gray-100 block py-2 font-roboto font-medium uppercase tracking-wider text-sm transition-colors">
               CONTATO
-            </a>
+            </Link>
           </nav>
 
           {/* Right side icons */}
@@ -88,9 +91,11 @@ const Header = () => {
             <Button variant="ghost" size="icon" className="hidden md:flex">
               <Search className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon">
-              <User className="w-5 h-5" />
-            </Button>
+            <Link to="/conta">
+              <Button variant="ghost" size="icon">
+                <User className="w-5 h-5" />
+              </Button>
+            </Link>
             <Button variant="ghost" size="icon" className="relative">
               <Heart className="w-5 h-5" />
               <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
@@ -116,11 +121,11 @@ const Header = () => {
         {isMenuOpen && (
           <nav className="md:hidden py-4 border-t">
             <div className="flex flex-col space-y-4">
-              <a href="#" className="text-black font-roboto font-medium uppercase tracking-wider">NOVIDADES</a>
-              <a href="#" className="text-black font-roboto font-medium uppercase tracking-wider">MASCULINO</a>
-              <a href="#" className="text-black font-roboto font-medium uppercase tracking-wider">FEMININO</a>
-              <a href="#" className="text-black font-roboto font-medium uppercase tracking-wider">OUTLET</a>
-              <a href="#" className="text-black font-roboto font-medium uppercase tracking-wider">CONTATO</a>
+              <Link to="/loja" className="text-black font-roboto font-medium uppercase tracking-wider">NOVIDADES</Link>
+              <Link to="/loja" className="text-black font-roboto font-medium uppercase tracking-wider">MASCULINO</Link>
+              <Link to="/loja" className="text-black font-roboto font-medium uppercase tracking-wider">FEMININO</Link>
+              <Link to="/loja" className="text-black font-roboto font-medium uppercase tracking-wider">OUTLET</Link>
+              <Link to="/faq" className="text-black font-roboto font-medium uppercase tracking-wider">CONTATO</Link>
             </div>
           </nav>
         )}

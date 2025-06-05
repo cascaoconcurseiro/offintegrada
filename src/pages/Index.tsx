@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import CategorySection from '@/components/CategorySection';
 import ProductGrid from '@/components/ProductGrid';
+import LookbookSection from '@/components/LookbookSection';
 import NewsletterSection from '@/components/NewsletterSection';
 import Footer from '@/components/Footer';
 
@@ -14,6 +15,7 @@ const Index = () => {
       <HeroSection />
       <CategorySection />
       <ProductGrid />
+      <LookbookSection />
       <NewsletterSection />
       <Footer />
     </div>

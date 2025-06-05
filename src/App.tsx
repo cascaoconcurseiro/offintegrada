@@ -10,6 +10,7 @@ import ResellerPage from "./pages/ResellerPage";
 import SizeGuidePage from "./pages/SizeGuidePage";
 import FAQPage from "./pages/FAQPage";
 import AccountPage from "./pages/AccountPage";
+import ShopPageRoute from "./pages/ShopPage";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/loja" element={<ShopPageRoute />} />
           <Route path="/revendedor" element={<ResellerPage />} />
           <Route path="/guia-tamanhos" element={<SizeGuidePage />} />
           <Route path="/faq" element={<FAQPage />} />
