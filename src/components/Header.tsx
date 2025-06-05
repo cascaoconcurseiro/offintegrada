@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useCart } from '@/contexts/CartContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const { openCart, getItemCount } = useCart();
 
   const categories = {
     masculino: ['Regatas', 'Camisetas', 'Shorts', 'Calças', 'Agasalhos & Moletons'],
@@ -100,9 +102,13 @@ const Header = () => {
               <Heart className="w-5 h-5" />
               <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
             </Button>
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative" onClick={openCart}>
               <ShoppingBag className="w-5 h-5" />
-              <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+              {getItemCount() > 0 && (
+                <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {getItemCount()}
+                </span>
+              )}
             </Button>
             
             {/* Mobile menu button */}

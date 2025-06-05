@@ -3,60 +3,92 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingBag } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import { toast } from '@/hooks/use-toast';
 
 const ProductGrid = () => {
+  const { addItem } = useCart();
+
   const products = [
     {
       id: 1,
       name: "Regata Premium Masculina",
-      price: "R$ 89,90",
-      originalPrice: "R$ 119,90",
+      price: 89.90,
+      originalPrice: 119.90,
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=500&fit=crop&crop=center",
+      sizes: ["P", "M", "G", "GG"],
+      colors: ["Preto", "Branco"],
       isNew: true,
       sale: true
     },
     {
       id: 2,
       name: "Camiseta Compress Pro",
-      price: "R$ 129,90",
+      price: 129.90,
       image: "https://images.unsplash.com/photo-1583743814966-8936f37f8e8c?w=400&h=500&fit=crop&crop=center",
+      sizes: ["P", "M", "G"],
+      colors: ["Preto", "Azul"],
       isNew: false,
       sale: false
     },
     {
       id: 3,
       name: "Short Performance Elite",
-      price: "R$ 79,90",
+      price: 79.90,
       image: "https://images.unsplash.com/photo-1506629905138-e9edb9c83ee5?w=400&h=500&fit=crop&crop=center",
+      sizes: ["P", "M", "G"],
+      colors: ["Preto", "Cinza"],
       isNew: true,
       sale: false
     },
     {
       id: 4,
       name: "Legging High Tech",
-      price: "R$ 149,90",
-      originalPrice: "R$ 189,90",
+      price: 149.90,
+      originalPrice: 189.90,
       image: "https://images.unsplash.com/photo-1506629905138-e9edb9c83ee5?w=400&h=500&fit=crop&crop=center",
+      sizes: ["P", "M", "G"],
+      colors: ["Preto", "Rosa"],
       isNew: false,
       sale: true
     },
     {
       id: 5,
       name: "Top Fitness Feminino",
-      price: "R$ 69,90",
+      price: 69.90,
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=500&fit=crop&crop=center",
+      sizes: ["P", "M", "G"],
+      colors: ["Preto", "Branco"],
       isNew: false,
       sale: false
     },
     {
       id: 6,
       name: "Agasalho Elite Pro",
-      price: "R$ 249,90",
+      price: 249.90,
       image: "https://images.unsplash.com/photo-1556821840-3a9fbc86339e?w=400&h=500&fit=crop&crop=center",
+      sizes: ["P", "M", "G", "GG"],
+      colors: ["Preto", "Cinza"],
       isNew: true,
       sale: false
     }
   ];
+
+  const handleAddToCart = (product: any) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      size: product.sizes[0],
+      color: product.colors[0]
+    });
+    
+    toast({
+      title: "Produto adicionado!",
+      description: `${product.name} foi adicionado ao carrinho.`,
+    });
+  };
 
   return (
     <section className="py-12 md:py-20 bg-gray-100">
@@ -99,7 +131,10 @@ const ProductGrid = () => {
 
                 {/* Quick add to cart */}
                 <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Button className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs">
+                  <Button 
+                    onClick={() => handleAddToCart(product)}
+                    className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs"
+                  >
                     <ShoppingBag className="w-4 h-4 mr-2" />
                     ADICIONAR AO CARRINHO
                   </Button>
@@ -109,9 +144,9 @@ const ProductGrid = () => {
               <CardContent className="p-0 pt-4">
                 <h3 className="font-roboto font-medium text-base mb-2 uppercase tracking-wider">{product.name}</h3>
                 <div className="flex items-center space-x-2">
-                  <span className="text-lg font-roboto font-bold">{product.price}</span>
+                  <span className="text-lg font-roboto font-bold">R$ {product.price.toFixed(2).replace('.', ',')}</span>
                   {product.originalPrice && (
-                    <span className="text-gray-500 line-through font-roboto">{product.originalPrice}</span>
+                    <span className="text-gray-500 line-through font-roboto">R$ {product.originalPrice.toFixed(2).replace('.', ',')}</span>
                   )}
                 </div>
               </CardContent>

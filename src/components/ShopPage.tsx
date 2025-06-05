@@ -1,15 +1,18 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Heart, ShoppingBag } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import { toast } from '@/hooks/use-toast';
 
 const ShopPage = () => {
   const [selectedGender, setSelectedGender] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState(500);
+
+  const { addItem } = useCart();
 
   const products = [
     {
@@ -21,6 +24,7 @@ const ShopPage = () => {
       originalPrice: 119.90,
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=500&fit=crop&crop=center",
       sizes: ["P", "M", "G", "GG"],
+      colors: ["Preto", "Branco", "Cinza"],
       isNew: true,
       sale: true
     },
@@ -32,6 +36,7 @@ const ShopPage = () => {
       price: 129.90,
       image: "https://images.unsplash.com/photo-1583743814966-8936f37f8e8c?w=400&h=500&fit=crop&crop=center",
       sizes: ["P", "M", "G"],
+      colors: ["Preto", "Azul"],
       isNew: false,
       sale: false
     },
@@ -44,6 +49,7 @@ const ShopPage = () => {
       originalPrice: 189.90,
       image: "https://images.unsplash.com/photo-1506629905138-e9edb9c83ee5?w=400&h=500&fit=crop&crop=center",
       sizes: ["P", "M", "G"],
+      colors: ["Preto", "Rosa"],
       isNew: false,
       sale: true
     },
@@ -55,10 +61,27 @@ const ShopPage = () => {
       price: 69.90,
       image: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=500&fit=crop&crop=center",
       sizes: ["P", "M", "G"],
+      colors: ["Preto", "Branco"],
       isNew: true,
       sale: false
     }
   ];
+
+  const handleAddToCart = (product: any) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      size: product.sizes[0], // Default to first size
+      color: product.colors[0] // Default to first color
+    });
+    
+    toast({
+      title: "Produto adicionado!",
+      description: `${product.name} foi adicionado ao carrinho.`,
+    });
+  };
 
   const toggleSize = (size: string) => {
     setSelectedSizes(prev => 
@@ -237,7 +260,10 @@ const ShopPage = () => {
 
                     {/* Quick add to cart */}
                     <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <Button className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs">
+                      <Button 
+                        onClick={() => handleAddToCart(product)}
+                        className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs"
+                      >
                         <ShoppingBag className="w-4 h-4 mr-2" />
                         ADICIONAR AO CARRINHO
                       </Button>
