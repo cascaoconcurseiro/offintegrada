@@ -17,10 +17,10 @@ interface Coupon {
 }
 
 const SideCart = () => {
-  const { items, removeItem, updateQuantity, getCartTotal, getCartCount } = useCart();
+  const { items, removeItem, updateQuantity, getTotal, getItemCount } = useCart();
   const [appliedCoupon, setAppliedCoupon] = React.useState<Coupon | undefined>();
 
-  const subtotal = getCartTotal();
+  const subtotal = getTotal();
   const couponDiscount = appliedCoupon 
     ? appliedCoupon.type === 'percentage' 
       ? (subtotal * appliedCoupon.discount) / 100
@@ -33,9 +33,9 @@ const SideCart = () => {
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           <ShoppingBag className="h-6 w-6" />
-          {getCartCount() > 0 && (
+          {getItemCount() > 0 && (
             <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
-              {getCartCount()}
+              {getItemCount()}
             </Badge>
           )}
         </Button>
@@ -43,7 +43,7 @@ const SideCart = () => {
       <SheetContent className="w-full sm:max-w-lg">
         <SheetHeader>
           <SheetTitle className="font-oswald uppercase tracking-wider">
-            Carrinho ({getCartCount()})
+            Carrinho ({getItemCount()})
           </SheetTitle>
         </SheetHeader>
 
@@ -77,7 +77,7 @@ const SideCart = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.id, item.size, item.color, item.quantity - 1)}
                         >
                           <Minus className="w-3 h-3" />
                         </Button>
@@ -85,14 +85,14 @@ const SideCart = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, item.size, item.color, item.quantity + 1)}
                         >
                           <Plus className="w-3 h-3" />
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeItem(item.id, item.size, item.color)}
                         >
                           <X className="w-3 h-3" />
                         </Button>

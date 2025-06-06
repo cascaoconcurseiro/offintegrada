@@ -15,7 +15,7 @@ const HeaderEnhanced = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showWishlist, setShowWishlist] = useState(false);
-  const { getCartCount } = useCart();
+  const { getItemCount } = useCart();
   const { items: wishlistItems } = useWishlist();
 
   const navigation = [
