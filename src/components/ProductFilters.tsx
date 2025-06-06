@@ -10,6 +10,10 @@ interface ProductFiltersProps {
   setSelectedCategory: (category: string) => void;
   selectedSizes: string[];
   setSelectedSizes: (sizes: string[]) => void;
+  selectedColors: string[];
+  setSelectedColors: (colors: string[]) => void;
+  selectedBrands: string[];
+  setSelectedBrands: (brands: string[]) => void;
   priceRange: number;
   setPriceRange: (price: number) => void;
   sortBy: string;
@@ -26,6 +30,10 @@ const ProductFilters = ({
   setSelectedCategory,
   selectedSizes,
   setSelectedSizes,
+  selectedColors,
+  setSelectedColors,
+  selectedBrands,
+  setSelectedBrands,
   priceRange,
   setPriceRange,
   sortBy,
@@ -42,8 +50,27 @@ const ProductFilters = ({
     );
   };
 
+  const toggleColor = (color: string) => {
+    setSelectedColors(
+      selectedColors.includes(color) 
+        ? selectedColors.filter(c => c !== color)
+        : [...selectedColors, color]
+    );
+  };
+
+  const toggleBrand = (brand: string) => {
+    setSelectedBrands(
+      selectedBrands.includes(brand) 
+        ? selectedBrands.filter(b => b !== brand)
+        : [...selectedBrands, brand]
+    );
+  };
+
   const hasActiveFilters = selectedGender !== 'all' || selectedCategory !== 'all' || 
-    selectedSizes.length > 0 || priceRange < 500;
+    selectedSizes.length > 0 || selectedColors.length > 0 || selectedBrands.length > 0 || priceRange < 500;
+
+  const availableColors = ['Preto', 'Branco', 'Azul', 'Rosa', 'Cinza', 'Vermelho'];
+  const availableBrands = ['Premium', 'Elite', 'Pro', 'Basic', 'Tech'];
 
   return (
     <div className="bg-white p-6 border border-gray-200 rounded-md h-fit">
@@ -123,10 +150,66 @@ const ProductFilters = ({
         </div>
       </div>
 
+      {/* Brand Filter */}
+      <div className="mb-6">
+        <h4 className="font-oswald text-md font-medium mb-3 uppercase tracking-wider">Marcas</h4>
+        <div className="flex flex-col space-y-2">
+          {availableBrands.map((brand) => (
+            <label key={brand} className="inline-flex items-center">
+              <input 
+                type="checkbox" 
+                checked={selectedBrands.includes(brand)}
+                onChange={() => toggleBrand(brand)}
+                className="form-checkbox text-black" 
+              />
+              <span className="ml-2 text-gray-700 font-roboto">{brand}</span>
+            </label>
+          ))}
+        </div>
+        {selectedBrands.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {selectedBrands.map(brand => (
+              <Badge key={brand} variant="secondary" className="text-xs">
+                {brand}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Color Filter */}
+      <div className="mb-6">
+        <h4 className="font-oswald text-md font-medium mb-3 uppercase tracking-wider">Cores</h4>
+        <div className="grid grid-cols-2 gap-2">
+          {availableColors.map((color) => (
+            <button
+              key={color}
+              onClick={() => toggleColor(color)}
+              className={`p-2 border text-xs font-roboto font-medium transition-colors rounded ${
+                selectedColors.includes(color)
+                  ? 'bg-black text-white border-black'
+                  : 'bg-white text-black border-gray-300 hover:border-black'
+              }`}
+            >
+              {color}
+            </button>
+          ))}
+        </div>
+        {selectedColors.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {selectedColors.map(color => (
+              <Badge key={color} variant="secondary" className="text-xs">
+                {color}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Size Filter */}
       <div className="mb-6">
         <h4 className="font-oswald text-md font-medium mb-3 uppercase tracking-wider">Tamanhos</h4>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {['P', 'M', 'G', 'GG'].map((size) => (
             <button
               key={size}

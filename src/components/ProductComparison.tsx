@@ -3,31 +3,38 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Star } from 'lucide-react';
+import { X, Star, ShoppingCart } from 'lucide-react';
+import { useProductComparison } from '@/contexts/ProductComparisonContext';
+import { useCart } from '@/contexts/CartContext';
+import { toast } from '@/hooks/use-toast';
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  rating?: number;
-  composition: string;
-  sizes: string[];
-  colors: string[];
-  isNew?: boolean;
-  sale?: boolean;
-}
+const ProductComparison = () => {
+  const { 
+    comparisonProducts, 
+    removeFromComparison, 
+    clearComparison, 
+    isComparisonOpen, 
+    setIsComparisonOpen 
+  } = useProductComparison();
+  const { addItem } = useCart();
 
-interface ProductComparisonProps {
-  products: Product[];
-  isOpen: boolean;
-  onClose: () => void;
-  onRemoveProduct: (productId: number) => void;
-}
+  const handleAddToCart = (product: any) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      size: product.sizes[0] || 'M',
+      color: product.colors[0] || 'Preto'
+    });
+    
+    toast({
+      title: "Produto adicionado!",
+      description: `${product.name} foi adicionado ao carrinho.`,
+    });
+  };
 
-const ProductComparison = ({ products, isOpen, onClose, onRemoveProduct }: ProductComparisonProps) => {
-  if (products.length === 0) return null;
+  if (comparisonProducts.length === 0) return null;
 
   const features = [
     { key: 'price', label: 'Preço' },
@@ -38,47 +45,62 @@ const ProductComparison = ({ products, isOpen, onClose, onRemoveProduct }: Produ
   ];
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+    <Dialog open={isComparisonOpen} onOpenChange={setIsComparisonOpen}>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-oswald uppercase tracking-wider">
-            Comparar Produtos ({products.length})
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="font-oswald uppercase tracking-wider">
+              Comparar Produtos ({comparisonProducts.length})
+            </DialogTitle>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={clearComparison}
+            >
+              Limpar Tudo
+            </Button>
+          </div>
         </DialogHeader>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <div key={product.id} className="space-y-4 border rounded-lg p-4">
+          {comparisonProducts.map((product) => (
+            <div key={product.id} className="space-y-4 border rounded-lg p-4 relative">
+              <Button
+                size="sm"
+                variant="outline"
+                className="absolute top-2 right-2 h-8 w-8 p-0"
+                onClick={() => removeFromComparison(product.id)}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+
               <div className="relative">
                 <img
                   src={product.image}
                   alt={product.name}
                   className="w-full h-48 object-cover rounded"
                 />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="absolute top-2 right-2"
-                  onClick={() => onRemoveProduct(product.id)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
                 {product.isNew && (
                   <Badge className="absolute top-2 left-2 bg-green-600">NOVO</Badge>
                 )}
                 {product.sale && (
-                  <Badge className="absolute top-2 left-2 bg-red-600" style={{ marginTop: product.isNew ? '28px' : '0' }}>
+                  <Badge 
+                    className="absolute top-2 left-2 bg-red-600" 
+                    style={{ marginTop: product.isNew ? '28px' : '0' }}
+                  >
                     OFERTA
                   </Badge>
                 )}
               </div>
 
               <div>
-                <h3 className="font-medium mb-2">{product.name}</h3>
+                <h3 className="font-medium mb-4 font-oswald uppercase tracking-wider text-sm">
+                  {product.name}
+                </h3>
                 
                 {features.map((feature) => (
                   <div key={feature.key} className="flex justify-between py-2 border-b border-gray-100 text-sm">
-                    <span className="font-medium">{feature.label}:</span>
+                    <span className="font-medium text-gray-600">{feature.label}:</span>
                     <span className="text-right max-w-[50%]">
                       {feature.key === 'price' && (
                         <div className="space-x-2">
@@ -126,8 +148,13 @@ const ProductComparison = ({ products, isOpen, onClose, onRemoveProduct }: Produ
                   </div>
                 ))}
 
-                <Button className="w-full mt-4" size="sm">
-                  Ver Produto
+                <Button 
+                  className="w-full mt-4 bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs" 
+                  size="sm"
+                  onClick={() => handleAddToCart(product)}
+                >
+                  <ShoppingCart className="w-3 h-3 mr-1" />
+                  Adicionar ao Carrinho
                 </Button>
               </div>
             </div>

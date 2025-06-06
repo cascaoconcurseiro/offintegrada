@@ -2,12 +2,16 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingBag, Eye, Star } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ShoppingCart, Heart, Eye, Star, GitCompare } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useProductComparison } from '@/contexts/ProductComparisonContext';
 
 interface Product {
   id: number;
   name: string;
+  category: string;
+  gender: string;
   price: number;
   originalPrice?: number;
   image: string;
@@ -15,11 +19,11 @@ interface Product {
   colors: string[];
   isNew?: boolean;
   sale?: boolean;
-  category: string;
-  gender: string;
+  description?: string;
+  composition?: string;
+  care?: string;
   rating?: number;
   reviewsCount?: number;
-  availableSizes?: Record<string, number>;
 }
 
 interface ProductCardProps {
@@ -31,141 +35,117 @@ interface ProductCardProps {
   isInWishlist: (id: number) => boolean;
 }
 
-const ProductCard = ({ 
-  product, 
-  onAddToCart, 
-  onWishlistToggle, 
-  onQuickView, 
+const ProductCard = ({
+  product,
+  onAddToCart,
+  onWishlistToggle,
+  onQuickView,
   onShowReviews,
-  isInWishlist 
+  isInWishlist
 }: ProductCardProps) => {
-  const isOutOfStock = product.availableSizes && 
-    Object.values(product.availableSizes).every(stock => stock === 0);
+  const { addToComparison, isInComparison } = useProductComparison();
+
+  const handleAddToComparison = () => {
+    addToComparison({
+      ...product,
+      composition: product.composition || '90% Poliamida, 10% Elastano'
+    });
+  };
 
   return (
-    <Card className="group cursor-pointer border-0 shadow-none bg-transparent overflow-hidden">
-      <div className="relative overflow-hidden">
-        <Link to={`/produto/${product.id}`}>
-          <img 
-            src={product.image} 
-            alt={product.name}
-            className={`w-full h-80 md:h-96 object-cover transition-all duration-300 ${
-              isOutOfStock 
-                ? 'filter grayscale opacity-50' 
-                : 'filter grayscale group-hover:grayscale-0'
-            }`}
-            loading="lazy"
-          />
-        </Link>
-        
-        {/* Badges */}
-        <div className="absolute top-4 left-4 space-y-2">
+    <Card className="group hover:shadow-lg transition-all duration-300">
+      <CardContent className="p-0">
+        <div className="relative overflow-hidden">
+          <Link to={`/produto/${product.id}`}>
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-48 md:h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </Link>
+          
           {product.isNew && (
-            <span className="bg-green-600 text-white px-3 py-1 text-xs font-bold rounded font-roboto uppercase">NOVO</span>
+            <Badge className="absolute top-2 left-2 bg-green-600">NOVO</Badge>
           )}
           {product.sale && (
-            <span className="bg-red-600 text-white px-3 py-1 text-xs font-bold rounded font-roboto uppercase">OFERTA</span>
+            <Badge className="absolute top-2 right-2 bg-red-600">OFERTA</Badge>
           )}
-          {isOutOfStock && (
-            <span className="bg-gray-600 text-white px-3 py-1 text-xs font-bold rounded font-roboto uppercase">ESGOTADO</span>
-          )}
-        </div>
 
-        {/* Hover actions */}
-        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="bg-white/80 hover:bg-white"
-            onClick={(e) => {
-              e.stopPropagation();
-              onWishlistToggle(product);
-            }}
-          >
-            <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current text-red-500' : ''}`} />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="bg-white/80 hover:bg-white"
-            onClick={(e) => {
-              e.stopPropagation();
-              onQuickView(product);
-            }}
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
-        </div>
-
-        {/* Quick add to cart */}
-        {!isOutOfStock && (
-          <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <Button 
-              onClick={() => onAddToCart(product)}
-              className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs"
-            >
-              <ShoppingBag className="w-4 h-4 mr-2" />
-              ADICIONAR AO CARRINHO
-            </Button>
-          </div>
-        )}
-      </div>
-
-      <CardContent className="p-0 pt-4">
-        <Link to={`/produto/${product.id}`}>
-          <h3 className="font-roboto font-medium text-base mb-2 uppercase tracking-wider hover:underline">
-            {product.name}
-          </h3>
-        </Link>
-        
-        {/* Rating */}
-        {product.rating && (
-          <div className="flex items-center gap-2 mb-2">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-3 h-3 ${
-                    i < Math.floor(product.rating!) 
-                      ? 'fill-yellow-400 text-yellow-400' 
-                      : 'text-gray-300'
-                  }`}
-                />
-              ))}
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => onQuickView(product)}
+              >
+                <Eye className="w-4 h-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => onWishlistToggle(product)}
+                className={isInWishlist(product.id) ? 'bg-red-100 text-red-600' : ''}
+              >
+                <Heart className="w-4 h-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={handleAddToComparison}
+                className={isInComparison(product.id) ? 'bg-blue-100 text-blue-600' : ''}
+              >
+                <GitCompare className="w-4 h-4" />
+              </Button>
             </div>
-            <button
-              onClick={() => onShowReviews(product)}
-              className="text-xs text-gray-600 font-roboto hover:underline"
-            >
-              ({product.reviewsCount})
-            </button>
           </div>
-        )}
-        
-        <div className="flex items-center space-x-2">
-          <span className={`text-lg font-roboto font-bold ${isOutOfStock ? 'text-gray-500' : ''}`}>
-            R$ {product.price.toFixed(2).replace('.', ',')}
-          </span>
-          {product.originalPrice && (
-            <span className="text-gray-500 line-through font-roboto">
-              R$ {product.originalPrice.toFixed(2).replace('.', ',')}
-            </span>
-          )}
         </div>
-        
-        {/* Installments */}
-        {!isOutOfStock && (
-          <p className="text-xs text-gray-600 font-roboto mt-1">
-            ou 10x de R$ {(product.price / 10).toFixed(2).replace('.', ',')} sem juros
-          </p>
-        )}
 
-        {/* Stock status */}
-        {isOutOfStock && (
-          <p className="text-xs text-red-600 font-roboto mt-1 font-medium">
-            Produto indisponível
-          </p>
-        )}
+        <div className="p-4">
+          <Link to={`/produto/${product.id}`}>
+            <h3 className="font-medium text-sm mb-2 line-clamp-2 hover:text-gray-600 transition-colors">
+              {product.name}
+            </h3>
+          </Link>
+          
+          {product.rating && (
+            <div className="flex items-center gap-1 mb-2">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`w-3 h-3 ${
+                      i < Math.floor(product.rating!) 
+                        ? 'fill-yellow-400 text-yellow-400' 
+                        : 'text-gray-300'
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-gray-600">({product.reviewsCount || 0})</span>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <span className="font-bold text-lg">
+                R$ {product.price.toFixed(2).replace('.', ',')}
+              </span>
+              {product.originalPrice && (
+                <span className="text-sm text-gray-500 line-through ml-2">
+                  R$ {product.originalPrice.toFixed(2).replace('.', ',')}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <Button 
+            className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider text-xs"
+            onClick={() => onAddToCart(product)}
+          >
+            <ShoppingCart className="w-3 h-3 mr-1" />
+            Adicionar
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
