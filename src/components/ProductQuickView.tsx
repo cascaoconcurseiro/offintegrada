@@ -3,10 +3,13 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, ShoppingBag, X, Star } from 'lucide-react';
+import { Heart, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
+import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { toast } from '@/hooks/use-toast';
+import ImageZoom from '@/components/ImageZoom';
+import StarRating from '@/components/StarRating';
 
 interface Product {
   id: number;
@@ -45,6 +48,21 @@ const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewProps) =
   if (!product) return null;
 
   const images = product.images || [product.image];
+
+  const handleNextImage = () => {
+    setSelectedImage((prev) => (prev + 1) % images.length);
+  };
+
+  const handlePrevImage = () => {
+    setSelectedImage((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  useKeyboardNavigation({
+    isOpen,
+    onClose,
+    onNext: images.length > 1 ? handleNextImage : undefined,
+    onPrevious: images.length > 1 ? handlePrevImage : undefined
+  });
 
   const handleAddToCart = () => {
     if (!selectedSize) {
@@ -120,21 +138,51 @@ const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewProps) =
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-md border-0 shadow-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Product Images */}
           <div className="space-y-4">
             <div className="relative">
-              <img
+              <ImageZoom
                 src={images[selectedImage]}
                 alt={product.name}
-                className="w-full h-96 object-cover rounded-lg"
+                className="w-full h-96 rounded-lg overflow-hidden"
               />
+              
               {product.isNew && (
-                <Badge className="absolute top-4 left-4 bg-green-600">NOVO</Badge>
+                <Badge className="absolute top-4 left-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                  NOVO
+                </Badge>
               )}
               {product.sale && (
-                <Badge className="absolute top-4 right-4 bg-red-600">OFERTA</Badge>
+                <Badge className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white">
+                  OFERTA
+                </Badge>
+              )}
+
+              {/* Navigation Arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={handlePrevImage}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm text-white p-2 rounded-full hover:bg-black/80 transition-all duration-200"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={handleNextImage}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm text-white p-2 rounded-full hover:bg-black/80 transition-all duration-200"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+
+              {/* Image Counter */}
+              {images.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+                  {selectedImage + 1} / {images.length}
+                </div>
               )}
             </div>
             
@@ -144,8 +192,8 @@ const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewProps) =
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`flex-shrink-0 w-16 h-16 rounded border-2 ${
-                      selectedImage === index ? 'border-black' : 'border-gray-200'
+                    className={`flex-shrink-0 w-16 h-16 rounded border-2 transition-all duration-200 ${
+                      selectedImage === index ? 'border-black shadow-lg' : 'border-gray-200 hover:border-gray-400'
                     }`}
                   >
                     <img
@@ -168,18 +216,7 @@ const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewProps) =
               
               {product.rating && (
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-4 h-4 ${
-                          i < Math.floor(product.rating!) 
-                            ? 'fill-yellow-400 text-yellow-400' 
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
+                  <StarRating rating={product.rating} readonly />
                   <span className="text-sm text-gray-600 font-roboto">
                     {product.rating} ({product.reviewsCount} avaliações)
                   </span>
@@ -216,10 +253,10 @@ const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewProps) =
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`p-3 border text-sm font-roboto font-medium transition-colors ${
+                    className={`p-3 border text-sm font-roboto font-medium transition-all duration-200 ${
                       selectedSize === size
-                        ? 'bg-black text-white border-black'
-                        : 'bg-white text-black border-gray-300 hover:border-black'
+                        ? 'bg-black text-white border-black shadow-lg'
+                        : 'bg-white text-black border-gray-300 hover:border-black hover:shadow-md'
                     }`}
                   >
                     {size}
@@ -236,10 +273,10 @@ const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewProps) =
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
-                    className={`px-4 py-2 border text-sm font-roboto transition-colors ${
+                    className={`px-4 py-2 border text-sm font-roboto transition-all duration-200 ${
                       selectedColor === color
-                        ? 'bg-black text-white border-black'
-                        : 'bg-white text-black border-gray-300 hover:border-black'
+                        ? 'bg-black text-white border-black shadow-lg'
+                        : 'bg-white text-black border-gray-300 hover:border-black hover:shadow-md'
                     }`}
                   >
                     {color}
@@ -252,7 +289,7 @@ const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewProps) =
             <div className="space-y-3">
               <Button
                 onClick={handleAddToCart}
-                className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider"
+                className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider backdrop-blur-sm"
                 size="lg"
               >
                 <ShoppingBag className="w-4 h-4 mr-2" />
@@ -262,7 +299,7 @@ const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewProps) =
               <Button
                 onClick={handleWishlistToggle}
                 variant="outline"
-                className="w-full font-roboto font-medium uppercase tracking-wider"
+                className="w-full font-roboto font-medium uppercase tracking-wider backdrop-blur-sm border-black/20"
                 size="lg"
               >
                 <Heart className={`w-4 h-4 mr-2 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
@@ -287,6 +324,11 @@ const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewProps) =
                 )}
               </div>
             )}
+
+            {/* Keyboard shortcuts hint */}
+            <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
+              <p>💡 Use as setas ← → para navegar pelas imagens | ESC para fechar</p>
+            </div>
           </div>
         </div>
       </DialogContent>

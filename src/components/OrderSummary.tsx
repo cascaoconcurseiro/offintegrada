@@ -1,16 +1,33 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useCart } from '@/contexts/CartContext';
+import { useCoupons } from '@/hooks/useCoupons';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Tag, X, Percent } from 'lucide-react';
 
 const OrderSummary = () => {
   const { items, getTotal } = useCart();
+  const { appliedCoupon, validateCoupon, removeCoupon, calculateDiscount, isValidating } = useCoupons();
+  const [couponCode, setCouponCode] = useState('');
   
+  const subtotal = getTotal();
   const shipping = 15.90;
-  const discount = 0;
-  const finalTotal = getTotal() + shipping - discount;
+  const discount = calculateDiscount(subtotal);
+  const finalTotal = subtotal + shipping - discount;
+
+  const handleApplyCoupon = async () => {
+    if (couponCode.trim()) {
+      const success = await validateCoupon(couponCode.trim(), subtotal);
+      if (success) {
+        setCouponCode('');
+      }
+    }
+  };
 
   return (
-    <div className="bg-gray-50 p-6 rounded-lg border">
+    <div className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border border-gray-200 shadow-lg backdrop-blur-sm">
       <h3 className="font-oswald text-lg font-medium mb-6 uppercase tracking-wider">
         Resumo do Pedido
       </h3>
@@ -32,11 +49,61 @@ const OrderSummary = () => {
         ))}
       </div>
 
+      {/* Coupon Section */}
+      <div className="mb-6 space-y-3">
+        <h4 className="font-oswald font-medium text-sm uppercase tracking-wider">
+          Cupom de Desconto
+        </h4>
+        
+        {!appliedCoupon ? (
+          <div className="flex gap-2">
+            <Input
+              placeholder="Digite seu cupom"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+              className="flex-1"
+              onKeyPress={(e) => e.key === 'Enter' && handleApplyCoupon()}
+            />
+            <Button 
+              onClick={handleApplyCoupon} 
+              disabled={!couponCode.trim() || isValidating}
+              size="sm"
+              className="bg-black hover:bg-gray-800"
+            >
+              <Tag className="w-4 h-4 mr-1" />
+              {isValidating ? 'Validando...' : 'Aplicar'}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Percent className="w-4 h-4 text-green-600" />
+              <div>
+                <p className="text-sm font-medium text-green-800">{appliedCoupon.code}</p>
+                <p className="text-xs text-green-600">{appliedCoupon.description}</p>
+              </div>
+            </div>
+            <Button size="sm" variant="ghost" onClick={removeCoupon}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+        
+        <div className="text-xs text-gray-500 space-y-1">
+          <p>Cupons disponíveis:</p>
+          <div className="flex flex-wrap gap-1">
+            <Badge variant="outline" className="text-xs">PRIMEIRA10</Badge>
+            <Badge variant="outline" className="text-xs">FRETE20</Badge>
+            <Badge variant="outline" className="text-xs">TREINO15</Badge>
+          </div>
+        </div>
+      </div>
+
       {/* Totals */}
       <div className="border-t pt-4 space-y-2">
         <div className="flex justify-between font-roboto text-sm">
           <span>Subtotal:</span>
-          <span>R$ {getTotal().toFixed(2).replace('.', ',')}</span>
+          <span>R$ {subtotal.toFixed(2).replace('.', ',')}</span>
         </div>
         <div className="flex justify-between font-roboto text-sm">
           <span>Frete:</span>
@@ -44,32 +111,24 @@ const OrderSummary = () => {
         </div>
         {discount > 0 && (
           <div className="flex justify-between font-roboto text-sm text-green-600">
-            <span>Desconto:</span>
+            <span>Desconto ({appliedCoupon?.code}):</span>
             <span>-R$ {discount.toFixed(2).replace('.', ',')}</span>
           </div>
         )}
         <div className="border-t pt-2 flex justify-between font-oswald font-medium text-lg">
           <span>Total:</span>
-          <span>R$ {finalTotal.toFixed(2).replace('.', ',')}</span>
+          <span className="text-green-600">R$ {finalTotal.toFixed(2).replace('.', ',')}</span>
         </div>
       </div>
 
-      {/* Coupon */}
-      <div className="mt-6">
-        <label className="block font-roboto text-sm font-medium mb-2">
-          Cupom de Desconto
-        </label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Digite seu cupom"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm font-roboto"
-          />
-          <button className="px-4 py-2 bg-black text-white rounded font-roboto text-sm uppercase tracking-wider hover:bg-gray-800">
-            Aplicar
-          </button>
+      {/* Savings Display */}
+      {discount > 0 && (
+        <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+          <p className="text-sm text-green-800 font-medium text-center">
+            🎉 Você está economizando R$ {discount.toFixed(2).replace('.', ',')}!
+          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 };
