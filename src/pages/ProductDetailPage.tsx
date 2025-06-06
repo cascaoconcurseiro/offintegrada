@@ -14,6 +14,9 @@ import ProductSelection from '@/components/ProductSelection';
 import ProductBreadcrumb from '@/components/ProductBreadcrumb';
 import ProductSuggestions from '@/components/ProductSuggestions';
 import ProductQuickView from '@/components/ProductQuickView';
+import ProductReviewsInline from '@/components/ProductReviewsInline';
+import ProductTechnicalInfo from '@/components/ProductTechnicalInfo';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -38,19 +41,20 @@ const ProductDetailPage = () => {
     images: [
       "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=700&fit=crop&crop=center",
       "https://images.unsplash.com/photo-1583743814966-8936f37f8e8c?w=600&h=700&fit=crop&crop=center",
-      "https://images.unsplash.com/photo-1556821840-3a9fbc86339e?w=600&h=700&fit=crop&crop=center"
+      "https://images.unsplash.com/photo-1556821840-3a9fbc86339e?w=600&h=700&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1506629905138-e9edb9c83ee5?w=600&h=700&fit=crop&crop=center"
     ],
     sizes: ["P", "M", "G", "GG"],
     colors: ["Preto", "Branco", "Cinza"],
     availableSizes: { "P": 5, "M": 10, "G": 8, "GG": 3 },
     isNew: true,
     sale: true,
-    description: "Leveza e respirabilidade para seus treinos mais intensos. Tecido Dry Fit que afasta o suor do corpo, mantendo você seco durante toda a atividade física.",
+    description: "Leveza e respirabilidade para seus treinos mais intensos. Tecido Dry Fit que afasta o suor do corpo, mantendo você seco durante toda a atividade física. Design moderno com corte anatômico que acompanha os movimentos do corpo.",
     composition: "90% Poliamida, 10% Elastano",
-    care: "Lavar à máquina com água fria. Não usar alvejante. Secar à sombra.",
+    care: "Lavar à máquina com água fria. Não usar alvejante. Secar à sombra. Não passar ferro quente sobre estampas.",
     rating: 4.5,
-    reviewsCount: 15,
-    videoId: null
+    reviewsCount: 60,
+    videoId: "product_video_123"
   };
 
   const handleAddToCart = () => {
@@ -160,6 +164,7 @@ const ProductDetailPage = () => {
             productName={product.name}
             isNew={product.isNew}
             sale={product.sale}
+            videoId={product.videoId}
           />
 
           <div className="space-y-8">
@@ -188,6 +193,36 @@ const ProductDetailPage = () => {
               onWishlistToggle={handleWishlistToggle}
             />
           </div>
+        </div>
+
+        {/* Product Details Tabs */}
+        <div className="mb-16">
+          <Tabs defaultValue="technical" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="technical" className="font-oswald uppercase tracking-wider">
+                Informações Técnicas
+              </TabsTrigger>
+              <TabsTrigger value="reviews" className="font-oswald uppercase tracking-wider">
+                Avaliações ({product.reviewsCount})
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="technical" className="mt-8">
+              <ProductTechnicalInfo
+                composition={product.composition}
+                care={product.care}
+                description={product.description}
+              />
+            </TabsContent>
+            
+            <TabsContent value="reviews" className="mt-8">
+              <ProductReviewsInline
+                productId={product.id}
+                rating={product.rating}
+                reviewsCount={product.reviewsCount}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Product Suggestions */}

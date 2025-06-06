@@ -1,8 +1,8 @@
-
 import React from 'react';
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface ProductSuggestionsProps {
   currentProductId: number;
@@ -145,6 +145,16 @@ const ProductSuggestions = ({
     .filter(product => product.id !== currentProductId)
     .slice(0, 3);
 
+  const calculateBundlePrice = () => {
+    const currentProduct = allProducts.find(p => p.id === currentProductId);
+    const bundleTotal = frequentlyBoughtTogether.reduce((sum, product) => sum + product.price, 0);
+    const originalTotal = bundleTotal + (currentProduct?.price || 0);
+    const discount = originalTotal * 0.1; // 10% discount
+    return { originalTotal, bundleTotal: originalTotal - discount, discount };
+  };
+
+  const { originalTotal, bundleTotal, discount } = calculateBundlePrice();
+
   return (
     <div className="space-y-16">
       {/* Frequentemente Comprados Juntos */}
@@ -158,19 +168,46 @@ const ProductSuggestions = ({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {frequentlyBoughtTogether.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onAddToCart={onAddToCart}
-              onWishlistToggle={onWishlistToggle}
-              onQuickView={onQuickView}
-              onShowReviews={onShowReviews}
-              isInWishlist={isInWishlist}
-            />
-          ))}
-        </div>
+        <Card className="p-6 mb-8">
+          <CardContent className="p-0">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+              <div className="md:col-span-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {frequentlyBoughtTogether.map((product) => (
+                    <div key={product.id} className="text-center">
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-full h-48 object-cover rounded-lg mb-3"
+                      />
+                      <h4 className="font-medium text-sm mb-1">{product.name}</h4>
+                      <p className="font-bold text-sm">R$ {product.price.toFixed(2).replace('.', ',')}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="md:col-span-1 text-center">
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-600 line-through">
+                      De: R$ {originalTotal.toFixed(2).replace('.', ',')}
+                    </p>
+                    <p className="text-2xl font-bold text-green-600">
+                      Por: R$ {bundleTotal.toFixed(2).replace('.', ',')}
+                    </p>
+                    <p className="text-sm text-green-600">
+                      Economize: R$ {discount.toFixed(2).replace('.', ',')}
+                    </p>
+                  </div>
+                  <Button className="w-full bg-green-600 hover:bg-green-700">
+                    Comprar Conjunto
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* Produtos Relacionados */}
