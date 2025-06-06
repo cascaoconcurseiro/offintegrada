@@ -5,68 +5,134 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Mail, Phone, MapPin, Camera } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Camera, 
+  Package, 
+  Heart, 
+  Star,
+  Crown,
+  Gift,
+  Award,
+  Truck,
+  Calendar
+} from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
-interface UserProfileProps {
-  user: {
-    name: string;
-    email: string;
-    phone?: string;
-    address?: string;
-    avatar?: string;
-  };
-  onUpdate: (userData: any) => void;
-}
-
-const UserProfile = ({ user, onUpdate }: UserProfileProps) => {
+const UserProfile = () => {
+  const { user, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: user.name || '',
-    email: user.email || '',
-    phone: user.phone || '',
-    address: user.address || ''
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    address: user?.address || ''
   });
 
+  if (!user) {
+    return null;
+  }
+
   const handleSave = () => {
-    onUpdate(formData);
+    // Here you would update the user data
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     setFormData({
-      name: user.name || '',
-      email: user.email || '',
-      phone: user.phone || '',
-      address: user.address || ''
+      name: user?.name || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+      address: user?.address || ''
     });
     setIsEditing(false);
   };
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 font-oswald">
-          <User className="w-5 h-5" />
-          Perfil do Usuário
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Avatar Section */}
-        <div className="flex items-center gap-4">
-          <Avatar className="w-20 h-20">
-            <AvatarImage src={user.avatar} />
-            <AvatarFallback className="text-lg font-oswald">
-              {user.name?.split(' ').map(n => n[0]).join('') || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <Button variant="outline" size="sm">
-            <Camera className="w-4 h-4 mr-2" />
-            Alterar Foto
-          </Button>
-        </div>
+  const userLevel = user.loyaltyPoints >= 500 ? 'Ouro' : user.loyaltyPoints >= 200 ? 'Prata' : 'Bronze';
+  const levelColor = userLevel === 'Ouro' ? 'text-yellow-600' : userLevel === 'Prata' ? 'text-gray-500' : 'text-orange-600';
 
-        {/* User Information */}
-        <div className="space-y-4">
+  return (
+    <div className="space-y-6">
+      {/* Welcome Card */}
+      <Card className="bg-gradient-to-r from-black to-gray-800 text-white">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Avatar className="w-16 h-16 border-2 border-white">
+                <AvatarImage src={user.avatar} />
+                <AvatarFallback className="text-lg font-oswald bg-gray-700">
+                  {user.name?.split(' ').map(n => n[0]).join('') || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="text-2xl font-oswald font-bold">{user.name}</h2>
+                <div className="flex items-center gap-2 mt-1">
+                  <Crown className={`w-4 h-4 ${levelColor}`} />
+                  <span className={`font-roboto font-medium ${levelColor}`}>
+                    Nível {userLevel}
+                  </span>
+                  <Badge variant="secondary" className="bg-white/20 text-white">
+                    {user.loyaltyPoints || 0} pontos
+                  </Badge>
+                </div>
+              </div>
+            </div>
+            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black">
+              <Camera className="w-4 h-4 mr-2" />
+              Alterar Foto
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Package className="w-8 h-8 mx-auto mb-2 text-blue-600" />
+            <div className="text-2xl font-oswald font-bold">12</div>
+            <div className="text-sm text-gray-600 font-roboto">Pedidos</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Heart className="w-8 h-8 mx-auto mb-2 text-red-500" />
+            <div className="text-2xl font-oswald font-bold">8</div>
+            <div className="text-sm text-gray-600 font-roboto">Favoritos</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Star className="w-8 h-8 mx-auto mb-2 text-yellow-500" />
+            <div className="text-2xl font-oswald font-bold">4.8</div>
+            <div className="text-sm text-gray-600 font-roboto">Avaliação</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Gift className="w-8 h-8 mx-auto mb-2 text-purple-500" />
+            <div className="text-2xl font-oswald font-bold">3</div>
+            <div className="text-sm text-gray-600 font-roboto">Cupons</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* User Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 font-oswald">
+            <User className="w-5 h-5" />
+            Informações Pessoais
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="name">Nome Completo</Label>
@@ -122,7 +188,6 @@ const UserProfile = ({ user, onUpdate }: UserProfileProps) => {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex gap-2 pt-4">
             {isEditing ? (
               <>
@@ -139,9 +204,44 @@ const UserProfile = ({ user, onUpdate }: UserProfileProps) => {
               </Button>
             )}
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      {/* Recent Orders */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 font-oswald">
+            <Package className="w-5 h-5" />
+            Pedidos Recentes
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {[1, 2, 3].map((order) => (
+              <div key={order} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                  <div>
+                    <p className="font-roboto font-medium">Pedido #000{order}</p>
+                    <p className="text-sm text-gray-600">2 itens • R$ 179,80</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <Badge className="bg-green-100 text-green-800">
+                    <Truck className="w-3 h-3 mr-1" />
+                    Entregue
+                  </Badge>
+                  <p className="text-xs text-gray-500 mt-1">15/05/2024</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Button variant="outline" className="w-full mt-4 font-roboto">
+            Ver Todos os Pedidos
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

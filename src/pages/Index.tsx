@@ -3,7 +3,6 @@ import React from 'react';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
 import HeroSection from '@/components/HeroSection';
 import TrustIndicators from '@/components/TrustIndicators';
-import MysteryBoxHero from '@/components/MysteryBoxHero';
 import CategorySectionEnhanced from '@/components/CategorySectionEnhanced';
 import ProductShowcase from '@/components/ProductShowcase';
 import TechBanner from '@/components/TechBanner';
@@ -16,6 +15,9 @@ import NewsletterSection from '@/components/NewsletterSection';
 import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import UrgencyBanner from '@/components/UrgencyBanner';
+import FreeShippingBar from '@/components/FreeShippingBar';
+import SocialProof from '@/components/SocialProof';
 
 const Index = () => {
   return (
@@ -26,6 +28,8 @@ const Index = () => {
         keywords="roupas fitness, academia, musculação, performance, premium, offseason, regatas, camisetas, shorts"
       />
       
+      <UrgencyBanner />
+      <FreeShippingBar />
       <HeaderEnhanced />
       
       <ErrorBoundary fallback={<div className="h-96 bg-gray-100 flex items-center justify-center">Erro ao carregar seção</div>}>
@@ -34,10 +38,6 @@ const Index = () => {
       
       <ErrorBoundary>
         <TrustIndicators />
-      </ErrorBoundary>
-      
-      <ErrorBoundary>
-        <MysteryBoxHero />
       </ErrorBoundary>
       
       <ErrorBoundary>
@@ -58,6 +58,10 @@ const Index = () => {
       
       <ErrorBoundary>
         <SmartRecommendations type="trending" />
+      </ErrorBoundary>
+      
+      <ErrorBoundary>
+        <SocialProof />
       </ErrorBoundary>
       
       <ErrorBoundary>
