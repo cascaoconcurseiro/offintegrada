@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -13,12 +12,16 @@ import ProductImageGallery from '@/components/ProductImageGallery';
 import ProductInfo from '@/components/ProductInfo';
 import ProductSelection from '@/components/ProductSelection';
 import ProductBreadcrumb from '@/components/ProductBreadcrumb';
+import ProductSuggestions from '@/components/ProductSuggestions';
+import ProductQuickView from '@/components/ProductQuickView';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [showReviews, setShowReviews] = useState(false);
+  const [quickViewProduct, setQuickViewProduct] = useState<any>(null);
+  const [reviewsProduct, setReviewsProduct] = useState<any>(null);
   
   const { addItem } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -98,6 +101,45 @@ const ProductDetailPage = () => {
     }
   };
 
+  const handleSuggestionAddToCart = (product: any) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      size: product.sizes[0],
+      color: product.colors[0]
+    });
+    
+    toast({
+      title: "Produto adicionado!",
+      description: `${product.name} foi adicionado ao carrinho.`,
+    });
+  };
+
+  const handleSuggestionWishlistToggle = (product: any) => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+      toast({
+        title: "Removido da lista de desejos",
+        description: `${product.name} foi removido da sua lista de desejos.`,
+      });
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+        gender: product.gender
+      });
+      toast({
+        title: "Adicionado à lista de desejos",
+        description: `${product.name} foi adicionado à sua lista de desejos.`,
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <Header />
@@ -112,7 +154,7 @@ const ProductDetailPage = () => {
           </Link>
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           <ProductImageGallery
             images={product.images}
             productName={product.name}
@@ -147,6 +189,18 @@ const ProductDetailPage = () => {
             />
           </div>
         </div>
+
+        {/* Product Suggestions */}
+        <ProductSuggestions
+          currentProductId={product.id}
+          category={product.category}
+          gender={product.gender}
+          onAddToCart={handleSuggestionAddToCart}
+          onWishlistToggle={handleSuggestionWishlistToggle}
+          onQuickView={setQuickViewProduct}
+          onShowReviews={setReviewsProduct}
+          isInWishlist={isInWishlist}
+        />
       </div>
 
       {/* Reviews Modal */}
@@ -156,6 +210,23 @@ const ProductDetailPage = () => {
           productName={product.name}
           isOpen={showReviews}
           onClose={() => setShowReviews(false)}
+        />
+      )}
+
+      {/* Quick View Modal */}
+      <ProductQuickView
+        product={quickViewProduct}
+        isOpen={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+      />
+
+      {/* Reviews Modal for Suggestions */}
+      {reviewsProduct && (
+        <ProductReviews
+          productId={reviewsProduct.id}
+          productName={reviewsProduct.name}
+          isOpen={!!reviewsProduct}
+          onClose={() => setReviewsProduct(null)}
         />
       )}
 

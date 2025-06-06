@@ -190,6 +190,10 @@ const ShopPageRefactored = () => {
             setSelectedSizes={setSelectedSizes}
             priceRange={priceRange}
             setPriceRange={setPriceRange}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            totalProducts={products.length}
+            filteredCount={filteredProducts.length}
             onClearFilters={clearFilters}
           />
         </aside>
