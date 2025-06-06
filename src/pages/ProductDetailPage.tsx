@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import Header from '@/components/Header';
+import HeaderEnhanced from '@/components/HeaderEnhanced';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -146,7 +146,7 @@ const ProductDetailPage = () => {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <HeaderEnhanced />
       
       <div className="container mx-auto px-4 py-8">
         <ProductBreadcrumb gender={product.gender} productName={product.name} />

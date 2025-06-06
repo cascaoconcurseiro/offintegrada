@@ -1,9 +1,11 @@
 
 import React from 'react';
-import Header from '@/components/Header';
+import HeaderEnhanced from '@/components/HeaderEnhanced';
 import HeroSection from '@/components/HeroSection';
-import CategorySection from '@/components/CategorySection';
+import MysteryBoxSection from '@/components/MysteryBoxSection';
+import CategorySectionEnhanced from '@/components/CategorySectionEnhanced';
 import ProductGrid from '@/components/ProductGrid';
+import TestimonialsSection from '@/components/TestimonialsSection';
 import LookbookSection from '@/components/LookbookSection';
 import NewsletterSection from '@/components/NewsletterSection';
 import Footer from '@/components/Footer';
@@ -11,10 +13,12 @@ import Footer from '@/components/Footer';
 const Index = () => {
   return (
     <div className="min-h-screen">
-      <Header />
+      <HeaderEnhanced />
       <HeroSection />
-      <CategorySection />
+      <MysteryBoxSection />
+      <CategorySectionEnhanced />
       <ProductGrid />
+      <TestimonialsSection />
       <LookbookSection />
       <NewsletterSection />
       <Footer />
