@@ -7,7 +7,7 @@ import { Menu, Search, User, Heart, X } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import SideCart from './SideCart';
-import NotificationSystem from './NotificationSystem';
+import EnhancedNotifications from './EnhancedNotifications';
 import WishlistModal from './WishlistModal';
 import IntelligentSearch from './IntelligentSearch';
 
@@ -27,7 +27,7 @@ const HeaderEnhanced = () => {
 
   return (
     <>
-      <header className="bg-white border-b sticky top-0 z-50">
+      <header className="bg-white border-b sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Mobile menu button */}
@@ -43,7 +43,9 @@ const HeaderEnhanced = () => {
 
             {/* Logo */}
             <Link to="/" className="flex-shrink-0">
-              <span className="text-2xl font-oswald font-bold tracking-wider">OFFSEASON</span>
+              <span className="text-2xl font-oswald font-bold tracking-wider bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent">
+                OFFSEASON
+              </span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -52,9 +54,10 @@ const HeaderEnhanced = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-gray-900 hover:text-gray-600 font-roboto font-medium uppercase tracking-wider text-sm transition-colors"
+                  className="text-gray-900 hover:text-gray-600 font-roboto font-medium uppercase tracking-wider text-sm transition-colors relative group"
                 >
                   {item.name}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
                 </Link>
               ))}
             </nav>
@@ -66,30 +69,31 @@ const HeaderEnhanced = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setShowSearch(true)}
+                className="hover:bg-gray-100 transition-colors"
               >
                 <Search className="h-6 w-6" />
               </Button>
 
               {/* User Account */}
-              <Button variant="ghost" size="icon" asChild>
+              <Button variant="ghost" size="icon" asChild className="hover:bg-gray-100 transition-colors">
                 <Link to="/conta">
                   <User className="h-6 w-6" />
                 </Link>
               </Button>
 
               {/* Notifications */}
-              <NotificationSystem />
+              <EnhancedNotifications />
 
               {/* Wishlist */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative"
+                className="relative hover:bg-gray-100 transition-colors"
                 onClick={() => setShowWishlist(true)}
               >
                 <Heart className="h-6 w-6" />
                 {wishlistItems.length > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-600">
                     {wishlistItems.length}
                   </Badge>
                 )}
@@ -103,12 +107,12 @@ const HeaderEnhanced = () => {
           {/* Mobile Navigation */}
           {isMenuOpen && (
             <div className="md:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1 border-t">
+              <div className="px-2 pt-2 pb-3 space-y-1 border-t bg-gradient-to-r from-gray-50 to-white">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="block px-3 py-2 text-gray-900 hover:text-gray-600 font-roboto font-medium uppercase tracking-wider text-sm"
+                    className="block px-3 py-2 text-gray-900 hover:text-gray-600 hover:bg-gray-100 rounded-md font-roboto font-medium uppercase tracking-wider text-sm transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.name}

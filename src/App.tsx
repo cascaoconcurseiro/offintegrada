@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { ProductComparisonProvider } from "@/contexts/ProductComparisonContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ResellerPage from "./pages/ResellerPage";
@@ -27,29 +28,31 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <WishlistProvider>
-        <CartProvider>
-          <ProductComparisonProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/loja" element={<ShopPageRoute />} />
-                <Route path="/produto/:id" element={<ProductDetailPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/revendedor" element={<ResellerPage />} />
-                <Route path="/guia-tamanhos" element={<SizeGuidePage />} />
-                <Route path="/faq" element={<FAQPage />} />
-                <Route path="/conta" element={<AccountPage />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <CartModal />
-              <ProductComparison />
-              <ComparisonFloatingButton />
-            </BrowserRouter>
-          </ProductComparisonProvider>
-        </CartProvider>
-      </WishlistProvider>
+      <AuthProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <ProductComparisonProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/loja" element={<ShopPageRoute />} />
+                  <Route path="/produto/:id" element={<ProductDetailPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/revendedor" element={<ResellerPage />} />
+                  <Route path="/guia-tamanhos" element={<SizeGuidePage />} />
+                  <Route path="/faq" element={<FAQPage />} />
+                  <Route path="/conta" element={<AccountPage />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <CartModal />
+                <ProductComparison />
+                <ComparisonFloatingButton />
+              </BrowserRouter>
+            </ProductComparisonProvider>
+          </CartProvider>
+        </WishlistProvider>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
