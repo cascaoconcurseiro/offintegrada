@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, ShoppingBag, Eye, Star } from 'lucide-react';
+import ProductHoverGallery from './ProductHoverGallery';
 
 interface ProductCardProps {
   product: {
@@ -12,6 +13,7 @@ interface ProductCardProps {
     price: number;
     originalPrice?: number;
     image: string;
+    images?: string[];
     sizes: string[];
     colors: string[];
     isNew?: boolean;
@@ -36,14 +38,17 @@ const ProductCard = ({
   onShowReviews,
   isInWishlist 
 }: ProductCardProps) => {
+  // Use images array if available, otherwise fallback to single image
+  const productImages = product.images || [product.image];
+  
   return (
     <div className="group bg-white rounded-xl shadow-lg overflow-hidden border hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
       <div className="relative overflow-hidden">
         <Link to={`/produto/${product.id}`}>
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-48 md:h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+          <ProductHoverGallery
+            images={productImages}
+            productName={product.name}
+            className="w-full h-48 md:h-64"
           />
         </Link>
         

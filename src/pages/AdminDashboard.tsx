@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { 
   BarChart3, 
   Settings, 
@@ -17,11 +18,18 @@ import {
   Users, 
   ShoppingCart,
   Package,
-  Ticket,
+  Gift,
   AlertCircle,
   CheckCircle,
   Clock,
-  DollarSign
+  DollarSign,
+  FileText,
+  MessageSquare,
+  Star,
+  Eye,
+  Download,
+  Upload,
+  RefreshCw
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -57,13 +65,50 @@ const AdminDashboard = () => {
       change: '+3',
       icon: <Package className="w-5 h-5" />,
       color: 'text-orange-600'
+    },
+    {
+      title: 'Taxa Conversão',
+      value: '3.2%',
+      change: '+0.5%',
+      icon: <TrendingUp className="w-5 h-5" />,
+      color: 'text-indigo-600'
+    },
+    {
+      title: 'Ticket Médio',
+      value: 'R$ 189',
+      change: '+15%',
+      icon: <DollarSign className="w-5 h-5" />,
+      color: 'text-emerald-600'
+    },
+    {
+      title: 'Reviews',
+      value: '4.8',
+      change: '+0.2',
+      icon: <Star className="w-5 h-5" />,
+      color: 'text-yellow-600'
+    },
+    {
+      title: 'Carrinho Abandonado',
+      value: '67%',
+      change: '-5%',
+      icon: <AlertCircle className="w-5 h-5" />,
+      color: 'text-red-600'
     }
   ];
 
   const recentOrders = [
-    { id: '#1234', customer: 'João Silva', value: 'R$ 189,90', status: 'pending' },
-    { id: '#1235', customer: 'Maria Santos', value: 'R$ 299,90', status: 'completed' },
-    { id: '#1236', customer: 'Pedro Costa', value: 'R$ 159,90', status: 'processing' },
+    { id: '#1234', customer: 'João Silva', value: 'R$ 189,90', status: 'pending', items: 2 },
+    { id: '#1235', customer: 'Maria Santos', value: 'R$ 299,90', status: 'completed', items: 3 },
+    { id: '#1236', customer: 'Pedro Costa', value: 'R$ 159,90', status: 'processing', items: 1 },
+    { id: '#1237', customer: 'Ana Oliveira', value: 'R$ 249,90', status: 'completed', items: 2 },
+    { id: '#1238', customer: 'Carlos Lima', value: 'R$ 89,90', status: 'pending', items: 1 }
+  ];
+
+  const topProducts = [
+    { name: 'Regata Premium Masculina', sales: 89, revenue: 'R$ 7.921,00' },
+    { name: 'Camiseta Feminina Básica', sales: 67, revenue: 'R$ 4.689,00' },
+    { name: 'Short Moletom Unissex', sales: 45, revenue: 'R$ 6.750,00' },
+    { name: 'Jaqueta Jeans Feminina', sales: 34, revenue: 'R$ 8.160,00' }
   ];
 
   const handleLogin = () => {
@@ -95,11 +140,10 @@ const AdminDashboard = () => {
           <CardContent className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2">Senha</label>
-              <input
+              <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 placeholder="Digite sua senha"
                 onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
               />
@@ -130,72 +174,130 @@ const AdminDashboard = () => {
               Gerencie sua loja OFFSEASON e monitore performance
             </p>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={() => setIsAuthenticated(false)}
-          >
-            Sair
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Atualizar
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsAuthenticated(false)}
+            >
+              Sair
+            </Button>
+          </div>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
           {stats.map((stat, index) => (
             <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
-                    <p className="text-2xl font-bold">{stat.value}</p>
-                    <p className={`text-sm ${stat.color}`}>{stat.change} vs ontem</p>
-                  </div>
-                  <div className="bg-black text-white p-3 rounded-lg">
+              <CardContent className="p-4">
+                <div className="flex flex-col items-center text-center">
+                  <div className="bg-black text-white p-2 rounded-lg mb-2">
                     {stat.icon}
                   </div>
+                  <p className="text-xs text-gray-600 mb-1">{stat.title}</p>
+                  <p className="text-lg font-bold">{stat.value}</p>
+                  <p className={`text-xs ${stat.color}`}>{stat.change}</p>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Recent Orders */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="font-oswald">Pedidos Recentes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-4">
-                    <span className="font-medium">{order.id}</span>
-                    <span className="text-gray-600">{order.customer}</span>
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Button variant="outline" className="h-16 flex flex-col gap-1">
+            <Package className="w-5 h-5" />
+            <span className="text-xs">Novo Produto</span>
+          </Button>
+          <Button variant="outline" className="h-16 flex flex-col gap-1">
+            <Gift className="w-5 h-5" />
+            <span className="text-xs">Novo Cupom</span>
+          </Button>
+          <Button variant="outline" className="h-16 flex flex-col gap-1">
+            <FileText className="w-5 h-5" />
+            <span className="text-xs">Relatórios</span>
+          </Button>
+          <Button variant="outline" className="h-16 flex flex-col gap-1">
+            <MessageSquare className="w-5 h-5" />
+            <span className="text-xs">Suporte</span>
+          </Button>
+        </div>
+
+        {/* Recent Orders and Top Products */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-oswald flex items-center justify-between">
+                Pedidos Recentes
+                <Badge>{recentOrders.length}</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {recentOrders.map((order) => (
+                  <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <span className="font-medium text-sm">{order.id}</span>
+                      <div>
+                        <p className="font-medium text-sm">{order.customer}</p>
+                        <p className="text-xs text-gray-500">{order.items} item(s)</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="font-bold text-sm">{order.value}</span>
+                      <Badge 
+                        className={
+                          order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                          order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }
+                      >
+                        {order.status === 'completed' && <CheckCircle className="w-3 h-3 mr-1" />}
+                        {order.status === 'processing' && <Clock className="w-3 h-3 mr-1" />}
+                        {order.status === 'pending' && <AlertCircle className="w-3 h-3 mr-1" />}
+                        {order.status === 'completed' ? 'Concluído' :
+                         order.status === 'processing' ? 'Processando' : 'Pendente'}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="font-bold">{order.value}</span>
-                    <Badge 
-                      className={
-                        order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                        order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                        'bg-yellow-100 text-yellow-800'
-                      }
-                    >
-                      {order.status === 'completed' && <CheckCircle className="w-3 h-3 mr-1" />}
-                      {order.status === 'processing' && <Clock className="w-3 h-3 mr-1" />}
-                      {order.status === 'pending' && <AlertCircle className="w-3 h-3 mr-1" />}
-                      {order.status === 'completed' ? 'Concluído' :
-                       order.status === 'processing' ? 'Processando' : 'Pendente'}
-                    </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-oswald">Produtos Mais Vendidos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {topProducts.map((product, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">{product.name}</p>
+                        <p className="text-xs text-gray-500">{product.sales} vendas</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-sm">{product.revenue}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Main Dashboard Tabs */}
         <Tabs defaultValue="conversion" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="conversion" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               Conversão
@@ -205,12 +307,20 @@ const AdminDashboard = () => {
               Integrações
             </TabsTrigger>
             <TabsTrigger value="coupons" className="flex items-center gap-2">
-              <Ticket className="w-4 h-4" />
+              <Gift className="w-4 h-4" />
               Cupons
+            </TabsTrigger>
+            <TabsTrigger value="products" className="flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              Produtos
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Analytics
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
-              Configurações
+              Config
             </TabsTrigger>
           </TabsList>
           
@@ -224,6 +334,85 @@ const AdminDashboard = () => {
           
           <TabsContent value="coupons">
             <AdvancedCouponSystem />
+          </TabsContent>
+          
+          <TabsContent value="products">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">Gerenciamento de Produtos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-2">
+                      <Button>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Novo Produto
+                      </Button>
+                      <Button variant="outline">
+                        <Upload className="w-4 h-4 mr-2" />
+                        Importar
+                      </Button>
+                      <Button variant="outline">
+                        <Download className="w-4 h-4 mr-2" />
+                        Exportar
+                      </Button>
+                    </div>
+                    <div className="flex gap-2">
+                      <Input placeholder="Buscar produtos..." className="w-64" />
+                      <Button variant="outline">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center py-12 text-gray-500">
+                    <Package className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>Sistema de gerenciamento de produtos será implementado aqui</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="analytics">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald">Analytics Avançado</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <BarChart3 className="w-8 h-8 mx-auto mb-2 text-blue-600" />
+                        <h3 className="font-medium">Relatórios de Vendas</h3>
+                        <p className="text-sm text-gray-600">Análises detalhadas</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <Users className="w-8 h-8 mx-auto mb-2 text-green-600" />
+                        <h3 className="font-medium">Comportamento</h3>
+                        <p className="text-sm text-gray-600">Análise de usuários</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <TrendingUp className="w-8 h-8 mx-auto mb-2 text-purple-600" />
+                        <h3 className="font-medium">Performance</h3>
+                        <p className="text-sm text-gray-600">Métricas de conversão</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
+                  <div className="text-center py-12 text-gray-500">
+                    <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>Dashboard de analytics será implementado aqui</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
           
           <TabsContent value="settings">
