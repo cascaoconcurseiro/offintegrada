@@ -1,141 +1,197 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Menu, Search, User, Heart, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { 
+  ShoppingBag, 
+  Heart, 
+  User, 
+  Search, 
+  Menu, 
+  X,
+  Settings
+} from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
-import SideCart from './SideCart';
-import EnhancedNotifications from './EnhancedNotifications';
-import WishlistModal from './WishlistModal';
-import IntelligentSearch from './IntelligentSearch';
 
 const HeaderEnhanced = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
-  const [showWishlist, setShowWishlist] = useState(false);
-  const { getItemCount } = useCart();
+  const [searchTerm, setSearchTerm] = useState('');
+  const { getItemCount, openCart } = useCart();
   const { items: wishlistItems } = useWishlist();
+  const navigate = useNavigate();
 
-  const navigation = [
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/loja?search=${encodeURIComponent(searchTerm)}`);
+      setSearchTerm('');
+    }
+  };
+
+  const navigationItems = [
     { name: 'Masculino', href: '/loja?gender=masculino' },
     { name: 'Feminino', href: '/loja?gender=feminino' },
-    { name: 'Lançamentos', href: '/loja?new=true' },
-    { name: 'Ofertas', href: '/loja?sale=true' },
+    { name: 'Novidades', href: '/loja?filter=new' },
+    { name: 'Ofertas', href: '/loja?filter=sale' },
   ];
 
   return (
-    <>
-      <header className="bg-white border-b sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+      {/* Top Bar */}
+      <div className="bg-black text-white text-center py-2 px-4">
+        <p className="text-sm font-roboto">
+          🔥 FRETE GRÁTIS para todo Brasil em compras acima de R$ 199
+        </p>
+      </div>
+
+      {/* Main Header */}
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center">
+            <h1 className="text-2xl md:text-3xl font-oswald font-bold uppercase tracking-wider">
+              OFFSEASON
+            </h1>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex space-x-8">
+            {navigationItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="font-roboto font-medium hover:text-gray-600 transition-colors uppercase tracking-wider text-sm"
               >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-8">
+            <div className="relative w-full">
+              <Input
+                type="text"
+                placeholder="Buscar produtos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pr-10 font-roboto"
+              />
+              <Button
+                type="submit"
+                size="sm"
+                className="absolute right-1 top-1 h-7 w-7 p-0"
+              >
+                <Search className="w-4 h-4" />
               </Button>
             </div>
+          </form>
 
-            {/* Logo */}
-            <Link to="/" className="flex-shrink-0">
-              <span className="text-2xl font-oswald font-bold tracking-wider bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent">
-                OFFSEASON
-              </span>
-            </Link>
+          {/* Actions */}
+          <div className="flex items-center space-x-4">
+            {/* Mobile Search */}
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Search className="w-5 h-5" />
+            </Button>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className="text-gray-900 hover:text-gray-600 font-roboto font-medium uppercase tracking-wider text-sm transition-colors relative group"
-                >
-                  {item.name}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* Right side icons */}
-            <div className="flex items-center space-x-4">
-              {/* Search */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowSearch(true)}
-                className="hover:bg-gray-100 transition-colors"
-              >
-                <Search className="h-6 w-6" />
-              </Button>
-
-              {/* User Account */}
-              <Button variant="ghost" size="icon" asChild className="hover:bg-gray-100 transition-colors">
-                <Link to="/conta">
-                  <User className="h-6 w-6" />
-                </Link>
-              </Button>
-
-              {/* Notifications */}
-              <EnhancedNotifications />
-
-              {/* Wishlist */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative hover:bg-gray-100 transition-colors"
-                onClick={() => setShowWishlist(true)}
-              >
-                <Heart className="h-6 w-6" />
+            {/* Wishlist */}
+            <Link to="/conta?tab=wishlist">
+              <Button variant="ghost" size="icon" className="relative">
+                <Heart className="w-5 h-5" />
                 {wishlistItems.length > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-600">
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-red-500">
                     {wishlistItems.length}
                   </Badge>
                 )}
               </Button>
+            </Link>
 
-              {/* Cart */}
-              <SideCart />
-            </div>
+            {/* Cart */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative"
+              onClick={openCart}
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {getItemCount() > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                  {getItemCount()}
+                </Badge>
+              )}
+            </Button>
+
+            {/* Account */}
+            <Link to="/conta">
+              <Button variant="ghost" size="icon">
+                <User className="w-5 h-5" />
+              </Button>
+            </Link>
+
+            {/* Admin Access */}
+            <Link to="/admin">
+              <Button variant="ghost" size="icon" title="Acesso Administrativo">
+                <Settings className="w-5 h-5" />
+              </Button>
+            </Link>
+
+            {/* Mobile Menu */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
           </div>
+        </div>
 
-          {/* Mobile Navigation */}
-          {isMenuOpen && (
-            <div className="md:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1 border-t bg-gradient-to-r from-gray-50 to-white">
-                {navigation.map((item) => (
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="lg:hidden border-t py-4">
+            <div className="space-y-4">
+              {/* Mobile Search */}
+              <form onSubmit={handleSearch} className="md:hidden">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Buscar produtos..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pr-10 font-roboto"
+                  />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="absolute right-1 top-1 h-7 w-7 p-0"
+                  >
+                    <Search className="w-4 h-4" />
+                  </Button>
+                </div>
+              </form>
+
+              {/* Mobile Navigation */}
+              <nav className="space-y-2">
+                {navigationItems.map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="block px-3 py-2 text-gray-900 hover:text-gray-600 hover:bg-gray-100 rounded-md font-roboto font-medium uppercase tracking-wider text-sm transition-colors"
+                    className="block py-2 font-roboto font-medium hover:text-gray-600 transition-colors uppercase tracking-wider text-sm"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.name}
                   </Link>
                 ))}
-              </div>
+              </nav>
             </div>
-          )}
-        </div>
-      </header>
-
-      {/* Search Modal */}
-      <IntelligentSearch
-        isOpen={showSearch}
-        onClose={() => setShowSearch(false)}
-      />
-
-      {/* Wishlist Modal */}
-      <WishlistModal
-        isOpen={showWishlist}
-        onClose={() => setShowWishlist(false)}
-      />
-    </>
+          </div>
+        )}
+      </div>
+    </header>
   );
 };
 

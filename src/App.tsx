@@ -18,9 +18,11 @@ import AccountPage from "./pages/AccountPage";
 import ShopPageRoute from "./pages/ShopPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import AdminDashboard from "./pages/AdminDashboard";
 import CartModal from "@/components/CartModal";
 import ProductComparison from "@/components/ProductComparison";
 import ComparisonFloatingButton from "@/components/ComparisonFloatingButton";
+import UrgencyScarcity from "@/components/UrgencyScarcity";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,16 +50,17 @@ const App = () => (
                     <Route path="/loja" element={<ShopPageRoute />} />
                     <Route path="/produto/:id" element={<ProductDetailPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/revendedor" element={<ResellerPage />} />
                     <Route path="/guia-tamanhos" element={<SizeGuidePage />} />
                     <Route path="/faq" element={<FAQPage />} />
                     <Route path="/conta" element={<AccountPage />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                   <CartModal />
                   <ProductComparison />
                   <ComparisonFloatingButton />
+                  <UrgencyScarcity />
                 </BrowserRouter>
               </ProductComparisonProvider>
             </CartProvider>
