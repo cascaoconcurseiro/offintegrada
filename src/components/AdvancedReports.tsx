@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,55 +17,94 @@ import {
   FileText,
   Target,
   Eye,
-  RefreshCw
+  RefreshCw,
+  Globe,
+  Smartphone,
+  Monitor,
+  MapPin,
+  Clock,
+  Heart,
+  Share2,
+  AlertTriangle,
+  CheckCircle,
+  Zap,
+  PieChart,
+  LineChart,
+  Activity
 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell, AreaChart, Area, ComposedChart, Scatter, ScatterChart } from 'recharts';
+import { toast } from '@/hooks/use-toast';
 
 const AdvancedReports = () => {
   const [dateRange, setDateRange] = useState('30d');
   const [reportType, setReportType] = useState('sales');
+  const [realTimeData, setRealTimeData] = useState(true);
 
-  // Mock data para os gráficos
+  // Dados em tempo real simulados
   const salesData = [
-    { name: 'Jan', vendas: 45000, pedidos: 230 },
-    { name: 'Fev', vendas: 52000, pedidos: 280 },
-    { name: 'Mar', vendas: 48000, pedidos: 250 },
-    { name: 'Abr', vendas: 61000, pedidos: 320 },
-    { name: 'Mai', vendas: 55000, pedidos: 290 },
-    { name: 'Jun', vendas: 67000, pedidos: 350 }
+    { name: 'Jan', vendas: 145000, pedidos: 1230, visitantes: 45230, conversao: 2.7 },
+    { name: 'Fev', vendas: 162000, pedidos: 1380, visitantes: 52000, conversao: 2.9 },
+    { name: 'Mar', vendas: 148000, pedidos: 1250, visitantes: 48000, conversao: 2.6 },
+    { name: 'Abr', vendas: 181000, pedidos: 1520, visitantes: 61000, conversao: 3.2 },
+    { name: 'Mai', vendas: 195000, pedidos: 1690, visitantes: 55000, conversao: 3.5 },
+    { name: 'Jun', vendas: 267000, pedidos: 2350, visitantes: 67000, conversao: 4.7 }
   ];
 
-  const conversionData = [
-    { name: 'Visitantes', value: 15420, color: '#8884d8' },
-    { name: 'Carrinho', value: 2847, color: '#82ca9d' },
-    { name: 'Checkout', value: 1205, color: '#ffc658' },
-    { name: 'Compra', value: 587, color: '#ff7300' }
+  const realtimeMetrics = [
+    { name: 'Visitantes Online', value: '2.847', change: '+12%', icon: Users, color: 'text-green-600', trend: 'up' },
+    { name: 'Vendas Hora', value: 'R$ 23.4k', change: '+34%', icon: DollarSign, color: 'text-blue-600', trend: 'up' },
+    { name: 'Conversão Live', value: '4.8%', change: '+0.3%', icon: Target, color: 'text-purple-600', trend: 'up' },
+    { name: 'Carrinho Ativo', value: '156', change: '+23', icon: ShoppingCart, color: 'text-orange-600', trend: 'up' },
+    { name: 'Ticket Médio', value: 'R$ 287', change: '+R$ 34', icon: TrendingUp, color: 'text-emerald-600', trend: 'up' },
+    { name: 'Abandono Cart', value: '58%', change: '-8%', icon: AlertTriangle, color: 'text-red-600', trend: 'down' }
   ];
 
-  const topProducts = [
-    { name: 'Regata Premium', vendas: 145, receita: 14500 },
-    { name: 'Camiseta Básica', vendas: 132, receita: 9240 },
-    { name: 'Short Moletom', vendas: 98, receita: 11760 },
-    { name: 'Jaqueta Jeans', vendas: 67, receita: 13400 }
+  const deviceData = [
+    { name: 'Mobile', value: 68, sales: 'R$ 89.2k', color: '#0088FE' },
+    { name: 'Desktop', value: 25, sales: 'R$ 67.8k', color: '#00C49F' },
+    { name: 'Tablet', value: 7, sales: 'R$ 12.4k', color: '#FFBB28' }
   ];
 
-  const trafficSources = [
-    { name: 'Orgânico', value: 40, color: '#0088FE' },
-    { name: 'Google Ads', value: 25, color: '#00C49F' },
-    { name: 'Facebook', value: 20, color: '#FFBB28' },
-    { name: 'Instagram', value: 10, color: '#FF8042' },
-    { name: 'Direto', value: 5, color: '#8884d8' }
+  const geographicData = [
+    { state: 'São Paulo', sales: 'R$ 89.4k', orders: 1247, percentage: 35.2 },
+    { state: 'Rio de Janeiro', sales: 'R$ 45.7k', orders: 623, percentage: 18.1 },
+    { state: 'Minas Gerais', sales: 'R$ 32.1k', orders: 445, percentage: 12.7 },
+    { state: 'Paraná', sales: 'R$ 28.9k', orders: 389, percentage: 11.4 },
+    { state: 'Rio Grande do Sul', sales: 'R$ 21.3k', orders: 287, percentage: 8.4 }
   ];
+
+  const cohortData = [
+    { month: 'Jan', month1: 100, month2: 85, month3: 72, month4: 65, month5: 58, month6: 54 },
+    { month: 'Fev', month1: 100, month2: 88, month3: 75, month4: 68, month5: 61, month6: null },
+    { month: 'Mar', month1: 100, month2: 82, month3: 69, month4: 63, month5: null, month6: null },
+    { month: 'Abr', month1: 100, month2: 86, month3: 74, month4: null, month5: null, month6: null },
+    { month: 'Mai', month1: 100, month2: 89, month3: null, month4: null, month5: null, month6: null },
+    { month: 'Jun', month1: 100, month2: null, month3: null, month4: null, month5: null, month6: null }
+  ];
+
+  const customerSegments = [
+    { segment: 'VIP (10+ compras)', count: 234, revenue: 'R$ 89.4k', ltv: 'R$ 2.890', color: 'bg-purple-600' },
+    { segment: 'Frequente (5-9 compras)', count: 567, revenue: 'R$ 67.2k', ltv: 'R$ 1.240', color: 'bg-blue-600' },
+    { segment: 'Regular (2-4 compras)', count: 1089, revenue: 'R$ 45.8k', ltv: 'R$ 580', color: 'bg-green-600' },
+    { segment: 'Novo (1 compra)', count: 2847, revenue: 'R$ 78.9k', ltv: 'R$ 289', color: 'bg-gray-600' }
+  ];
+
+  const exportReport = (type: string) => {
+    toast({
+      title: "Relatório Exportado",
+      description: `Relatório ${type} sendo preparado para download...`,
+    });
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-            Relatórios Avançados
+            Business Intelligence & Analytics
           </h2>
           <p className="text-gray-600">
-            Análises completas e insights de performance
+            Insights profissionais em tempo real para tomada de decisão estratégica
           </p>
         </div>
         <div className="flex gap-2">
@@ -75,12 +113,18 @@ const AdvancedReports = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="24h">24 horas</SelectItem>
               <SelectItem value="7d">7 dias</SelectItem>
               <SelectItem value="30d">30 dias</SelectItem>
               <SelectItem value="90d">90 dias</SelectItem>
               <SelectItem value="1y">1 ano</SelectItem>
+              <SelectItem value="custom">Personalizado</SelectItem>
             </SelectContent>
           </Select>
+          <Button variant="outline">
+            <Filter className="w-4 h-4 mr-2" />
+            Filtros
+          </Button>
           <Button>
             <Download className="w-4 h-4 mr-2" />
             Exportar
@@ -88,130 +132,147 @@ const AdvancedReports = () => {
         </div>
       </div>
 
-      {/* KPIs Principais */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Receita</p>
-                <p className="text-2xl font-bold">R$ 67.4k</p>
-                <p className="text-xs text-green-600">+23.5%</p>
-              </div>
-              <DollarSign className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Pedidos</p>
-                <p className="text-2xl font-bold">347</p>
-                <p className="text-xs text-green-600">+18.2%</p>
-              </div>
-              <ShoppingCart className="w-8 h-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Conversão</p>
-                <p className="text-2xl font-bold">3.8%</p>
-                <p className="text-xs text-green-600">+0.3%</p>
-              </div>
-              <Target className="w-8 h-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Ticket Médio</p>
-                <p className="text-2xl font-bold">R$ 194</p>
-                <p className="text-xs text-green-600">+12.1%</p>
-              </div>
-              <TrendingUp className="w-8 h-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Visitantes</p>
-                <p className="text-2xl font-bold">9.1k</p>
-                <p className="text-xs text-green-600">+15.4%</p>
-              </div>
-              <Users className="w-8 h-8 text-indigo-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">ROI</p>
-                <p className="text-2xl font-bold">347%</p>
-                <p className="text-xs text-green-600">+45.2%</p>
-              </div>
-              <BarChart3 className="w-8 h-8 text-pink-600" />
-            </div>
-          </CardContent>
-        </Card>
+      {/* Real-time Metrics Dashboard */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {realtimeMetrics.map((metric, index) => {
+          const IconComponent = metric.icon;
+          return (
+            <Card key={index} className="relative overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <IconComponent className={`w-5 h-5 ${metric.color}`} />
+                  <Badge variant={metric.trend === 'up' ? 'default' : 'destructive'}>
+                    {metric.change}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{metric.value}</p>
+                  <p className="text-xs text-gray-600">{metric.name}</p>
+                </div>
+                <div className={`absolute bottom-0 left-0 h-1 w-full ${
+                  metric.trend === 'up' ? 'bg-green-500' : 'bg-red-500'
+                } animate-pulse`}></div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+      <Tabs defaultValue="dashboard" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-8">
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="sales">Vendas</TabsTrigger>
-          <TabsTrigger value="products">Produtos</TabsTrigger>
           <TabsTrigger value="customers">Clientes</TabsTrigger>
+          <TabsTrigger value="products">Produtos</TabsTrigger>
           <TabsTrigger value="marketing">Marketing</TabsTrigger>
+          <TabsTrigger value="operations">Operações</TabsTrigger>
           <TabsTrigger value="finance">Financeiro</TabsTrigger>
+          <TabsTrigger value="prediction">Predição</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview">
+        <TabsContent value="dashboard">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="font-oswald">Vendas por Período</CardTitle>
+                <CardTitle className="font-oswald flex items-center gap-2">
+                  <LineChart className="w-5 h-5" />
+                  Performance de Vendas (Tempo Real)
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={salesData}>
+                  <ComposedChart data={salesData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
-                    <YAxis />
+                    <YAxis yAxisId="left" />
+                    <YAxis yAxisId="right" orientation="right" />
                     <Tooltip />
-                    <Line type="monotone" dataKey="vendas" stroke="#8884d8" strokeWidth={2} />
-                  </LineChart>
+                    <Bar yAxisId="left" dataKey="vendas" fill="#3B82F6" />
+                    <Line yAxisId="right" type="monotone" dataKey="conversao" stroke="#EF4444" strokeWidth={3} />
+                  </ComposedChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="font-oswald">Funil de Conversão</CardTitle>
+                <CardTitle className="font-oswald flex items-center gap-2">
+                  <Monitor className="w-5 h-5" />
+                  Tráfego por Dispositivo
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={conversionData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
+                  <RechartsPieChart>
+                    <Pie
+                      data={deviceData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, value }) => `${name}: ${value}%`}
+                    >
+                      {deviceData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
                     <Tooltip />
-                    <Bar dataKey="value" fill="#8884d8" />
-                  </BarChart>
+                  </RechartsPieChart>
                 </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald flex items-center gap-2">
+                  <MapPin className="w-5 h-5" />
+                  Vendas por Estado
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {geographicData.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+                        <span className="font-medium">{item.state}</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold">{item.sales}</p>
+                        <p className="text-sm text-gray-600">{item.orders} pedidos</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-oswald flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Segmentação de Clientes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {customerSegments.map((segment, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full ${segment.color}`}></div>
+                        <div>
+                          <h4 className="font-medium">{segment.segment}</h4>
+                          <p className="text-sm text-gray-600">{segment.count} clientes</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold">{segment.revenue}</p>
+                        <p className="text-sm text-gray-600">LTV: {segment.ltv}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -221,288 +282,165 @@ const AdvancedReports = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="font-oswald">Performance de Vendas</CardTitle>
+                <CardTitle className="font-oswald">Análise de Cohort - Retenção</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={salesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="vendas" fill="#82ca9d" />
-                    <Bar dataKey="pedidos" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left p-2">Mês</th>
+                        <th className="text-center p-2">Mês 1</th>
+                        <th className="text-center p-2">Mês 2</th>
+                        <th className="text-center p-2">Mês 3</th>
+                        <th className="text-center p-2">Mês 4</th>
+                        <th className="text-center p-2">Mês 5</th>
+                        <th className="text-center p-2">Mês 6</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cohortData.map((row, index) => (
+                        <tr key={index} className="border-b">
+                          <td className="p-2 font-medium">{row.month}</td>
+                          <td className="text-center p-2 bg-green-100">{row.month1}%</td>
+                          <td className={`text-center p-2 ${row.month2 ? `bg-green-${Math.floor(row.month2/10)}00` : 'bg-gray-100'}`}>
+                            {row.month2 ? `${row.month2}%` : '-'}
+                          </td>
+                          <td className={`text-center p-2 ${row.month3 ? `bg-yellow-${Math.floor(row.month3/10)}00` : 'bg-gray-100'}`}>
+                            {row.month3 ? `${row.month3}%` : '-'}
+                          </td>
+                          <td className={`text-center p-2 ${row.month4 ? `bg-orange-${Math.floor(row.month4/10)}00` : 'bg-gray-100'}`}>
+                            {row.month4 ? `${row.month4}%` : '-'}
+                          </td>
+                          <td className={`text-center p-2 ${row.month5 ? `bg-red-${Math.floor(row.month5/10)}00` : 'bg-gray-100'}`}>
+                            {row.month5 ? `${row.month5}%` : '-'}
+                          </td>
+                          <td className={`text-center p-2 ${row.month6 ? `bg-red-${Math.floor(row.month6/10)}00` : 'bg-gray-100'}`}>
+                            {row.month6 ? `${row.month6}%` : '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="font-oswald">Métodos de Pagamento</CardTitle>
+                <CardTitle className="font-oswald">Análise de Vendas por Hora</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span>PIX</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div className="bg-green-600 h-2 rounded-full" style={{width: '45%'}}></div>
-                      </div>
-                      <span className="text-sm font-medium">45%</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Cartão Crédito</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-600 h-2 rounded-full" style={{width: '35%'}}></div>
-                      </div>
-                      <span className="text-sm font-medium">35%</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Cartão Débito</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div className="bg-purple-600 h-2 rounded-full" style={{width: '15%'}}></div>
-                      </div>
-                      <span className="text-sm font-medium">15%</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Boleto</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div className="bg-orange-600 h-2 rounded-full" style={{width: '5%'}}></div>
-                      </div>
-                      <span className="text-sm font-medium">5%</span>
-                    </div>
-                  </div>
-                </div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={[
+                    { hour: '00h', sales: 12 }, { hour: '01h', sales: 8 }, { hour: '02h', sales: 5 },
+                    { hour: '03h', sales: 3 }, { hour: '04h', sales: 2 }, { hour: '05h', sales: 4 },
+                    { hour: '06h', sales: 8 }, { hour: '07h', sales: 15 }, { hour: '08h', sales: 25 },
+                    { hour: '09h', sales: 45 }, { hour: '10h', sales: 67 }, { hour: '11h', sales: 89 },
+                    { hour: '12h', sales: 78 }, { hour: '13h', sales: 92 }, { hour: '14h', sales: 87 },
+                    { hour: '15h', sales: 95 }, { hour: '16h', sales: 82 }, { hour: '17h', sales: 76 },
+                    { hour: '18h', sales: 85 }, { hour: '19h', sales: 92 }, { hour: '20h', sales: 98 },
+                    { hour: '21h', sales: 89 }, { hour: '22h', sales: 67 }, { hour: '23h', sales: 34 }
+                  ]}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="hour" />
+                    <YAxis />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="sales" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} />
+                  </AreaChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
-        <TabsContent value="products">
+        <TabsContent value="prediction">
           <Card>
             <CardHeader>
-              <CardTitle className="font-oswald">Produtos Mais Vendidos</CardTitle>
+              <CardTitle className="font-oswald flex items-center gap-2">
+                <Zap className="w-5 h-5" />
+                Predições e Insights de IA
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {topProducts.map((product, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-sm font-bold">
-                        {index + 1}
-                      </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <TrendingUp className="w-8 h-8 text-green-600" />
                       <div>
-                        <h4 className="font-medium">{product.name}</h4>
-                        <p className="text-sm text-gray-600">{product.vendas} vendas</p>
+                        <h3 className="font-bold">Previsão 30 dias</h3>
+                        <p className="text-sm text-gray-600">Baseado em IA</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold">R$ {product.receita.toLocaleString()}</p>
-                      <Badge className="mt-1">Top Seller</Badge>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span>Vendas previstas:</span>
+                        <span className="font-bold text-green-600">R$ 298k</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Pedidos estimados:</span>
+                        <span className="font-bold">2.847</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Precisão do modelo:</span>
+                        <span className="font-bold text-blue-600">94.2%</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <AlertTriangle className="w-8 h-8 text-orange-600" />
+                      <div>
+                        <h3 className="font-bold">Alertas Inteligentes</h3>
+                        <p className="text-sm text-gray-600">Insights automáticos</p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="p-2 bg-red-50 border border-red-200 rounded text-sm">
+                        <strong>Estoque baixo:</strong> 3 produtos críticos
+                      </div>
+                      <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+                        <strong>Conversão baixa:</strong> Página de checkout
+                      </div>
+                      <div className="p-2 bg-green-50 border border-green-200 rounded text-sm">
+                        <strong>Oportunidade:</strong> +15% vendas com desconto
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Target className="w-8 h-8 text-purple-600" />
+                      <div>
+                        <h3 className="font-bold">Recomendações</h3>
+                        <p className="text-sm text-gray-600">Otimizações sugeridas</p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-sm">Ativar recuperação de carrinho</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-sm">Criar campanha para VIPs</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-sm">Otimizar checkout mobile</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="customers">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-oswald">Fontes de Tráfego</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={trafficSources}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {trafficSources.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-oswald">Segmentação de Clientes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span>Novos Clientes</span>
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-green-100 text-green-800">67%</Badge>
-                      <span className="text-sm">234 clientes</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Clientes Recorrentes</span>
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-blue-100 text-blue-800">28%</Badge>
-                      <span className="text-sm">98 clientes</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>VIP (5+ compras)</span>
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-purple-100 text-purple-800">5%</Badge>
-                      <span className="text-sm">17 clientes</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="marketing">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-oswald">ROI por Canal</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span>Google Ads</span>
-                    <span className="font-bold text-green-600">287%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Facebook</span>
-                    <span className="font-bold text-green-600">234%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Instagram</span>
-                    <span className="font-bold text-green-600">189%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Email</span>
-                    <span className="font-bold text-green-600">456%</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-oswald">Campanhas Ativas</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Black Friday</span>
-                    <Badge className="bg-green-100 text-green-800">Ativa</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Retargeting</span>
-                    <Badge className="bg-green-100 text-green-800">Ativa</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Lookalike</span>
-                    <Badge className="bg-yellow-100 text-yellow-800">Pausada</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-oswald">Conversões</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600">587</div>
-                    <p className="text-sm text-gray-600">Conversões este mês</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xl font-bold">R$ 28,40</div>
-                    <p className="text-sm text-gray-600">Custo por conversão</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="finance">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-oswald">Fluxo de Caixa</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span>Receita Bruta</span>
-                    <span className="font-bold text-green-600">R$ 67.421</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Taxas de Pagamento</span>
-                    <span className="font-bold text-red-600">- R$ 3.371</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Marketing</span>
-                    <span className="font-bold text-red-600">- R$ 8.940</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Operacional</span>
-                    <span className="font-bold text-red-600">- R$ 12.450</span>
-                  </div>
-                  <hr />
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold">Lucro Líquido</span>
-                    <span className="font-bold text-green-600">R$ 42.660</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-oswald">Margem por Categoria</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span>Camisetas</span>
-                    <span className="font-bold">67%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Regatas</span>
-                    <span className="font-bold">72%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Shorts</span>
-                    <span className="font-bold">58%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Jaquetas</span>
-                    <span className="font-bold">45%</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </TabsContent>
       </Tabs>
     </div>
