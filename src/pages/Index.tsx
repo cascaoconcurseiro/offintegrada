@@ -2,9 +2,14 @@
 import React from 'react';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
 import HeroSection from '@/components/HeroSection';
+import TrustIndicators from '@/components/TrustIndicators';
+import MysteryBoxHero from '@/components/MysteryBoxHero';
 import CategorySectionEnhanced from '@/components/CategorySectionEnhanced';
+import ProductShowcase from '@/components/ProductShowcase';
+import TechBanner from '@/components/TechBanner';
 import ProductGrid from '@/components/ProductGrid';
 import SmartRecommendations from '@/components/SmartRecommendations';
+import CustomerTestimonials from '@/components/CustomerTestimonials';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import LookbookSection from '@/components/LookbookSection';
 import NewsletterSection from '@/components/NewsletterSection';
@@ -28,7 +33,23 @@ const Index = () => {
       </ErrorBoundary>
       
       <ErrorBoundary>
+        <TrustIndicators />
+      </ErrorBoundary>
+      
+      <ErrorBoundary>
+        <MysteryBoxHero />
+      </ErrorBoundary>
+      
+      <ErrorBoundary>
         <CategorySectionEnhanced />
+      </ErrorBoundary>
+      
+      <ErrorBoundary>
+        <ProductShowcase />
+      </ErrorBoundary>
+      
+      <ErrorBoundary>
+        <TechBanner />
       </ErrorBoundary>
       
       <ErrorBoundary>
@@ -37,6 +58,10 @@ const Index = () => {
       
       <ErrorBoundary>
         <SmartRecommendations type="trending" />
+      </ErrorBoundary>
+      
+      <ErrorBoundary>
+        <CustomerTestimonials />
       </ErrorBoundary>
       
       <ErrorBoundary>
