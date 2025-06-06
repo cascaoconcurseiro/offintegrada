@@ -29,8 +29,8 @@ const UserProfile = () => {
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    phone: user?.phone || '',
-    address: user?.address || ''
+    phone: (user as any)?.phone || '',
+    address: (user as any)?.address || ''
   });
 
   if (!user) {
@@ -38,7 +38,6 @@ const UserProfile = () => {
   }
 
   const handleSave = () => {
-    // Here you would update the user data
     setIsEditing(false);
   };
 
@@ -46,13 +45,13 @@ const UserProfile = () => {
     setFormData({
       name: user?.name || '',
       email: user?.email || '',
-      phone: user?.phone || '',
-      address: user?.address || ''
+      phone: (user as any)?.phone || '',
+      address: (user as any)?.address || ''
     });
     setIsEditing(false);
   };
 
-  const userLevel = user.loyaltyPoints >= 500 ? 'Ouro' : user.loyaltyPoints >= 200 ? 'Prata' : 'Bronze';
+  const userLevel = (user as any)?.loyaltyPoints >= 500 ? 'Ouro' : (user as any)?.loyaltyPoints >= 200 ? 'Prata' : 'Bronze';
   const levelColor = userLevel === 'Ouro' ? 'text-yellow-600' : userLevel === 'Prata' ? 'text-gray-500' : 'text-orange-600';
 
   return (
@@ -63,7 +62,7 @@ const UserProfile = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Avatar className="w-16 h-16 border-2 border-white">
-                <AvatarImage src={user.avatar} />
+                <AvatarImage src={(user as any)?.avatar} />
                 <AvatarFallback className="text-lg font-oswald bg-gray-700">
                   {user.name?.split(' ').map(n => n[0]).join('') || 'U'}
                 </AvatarFallback>
@@ -76,7 +75,7 @@ const UserProfile = () => {
                     Nível {userLevel}
                   </span>
                   <Badge variant="secondary" className="bg-white/20 text-white">
-                    {user.loyaltyPoints || 0} pontos
+                    {(user as any)?.loyaltyPoints || 0} pontos
                   </Badge>
                 </div>
               </div>
@@ -170,7 +169,7 @@ const UserProfile = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                 />
               ) : (
-                <p className="mt-1 text-sm text-gray-600">{user.phone || 'Não informado'}</p>
+                <p className="mt-1 text-sm text-gray-600">{(user as any)?.phone || 'Não informado'}</p>
               )}
             </div>
 
@@ -183,7 +182,7 @@ const UserProfile = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                 />
               ) : (
-                <p className="mt-1 text-sm text-gray-600">{user.address || 'Não informado'}</p>
+                <p className="mt-1 text-sm text-gray-600">{(user as any)?.address || 'Não informado'}</p>
               )}
             </div>
           </div>

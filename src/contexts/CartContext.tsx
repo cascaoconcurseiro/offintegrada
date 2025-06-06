@@ -1,5 +1,6 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { useAbandonedCart } from '@/hooks/useAbandonedCart';
 
 export interface CartItem {
   id: number;
@@ -37,6 +38,29 @@ export const useCart = () => {
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const { markAsConverted } = useAbandonedCart();
+
+  // Salvar carrinho no localStorage sempre que mudar
+  useEffect(() => {
+    if (items.length > 0) {
+      localStorage.setItem('cart', JSON.stringify(items));
+    } else {
+      localStorage.removeItem('cart');
+    }
+  }, [items]);
+
+  // Carregar carrinho do localStorage na inicialização
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        setItems(parsedCart);
+      } catch (error) {
+        console.error('Erro ao carregar carrinho:', error);
+      }
+    }
+  }, []);
 
   const addItem = (newItem: Omit<CartItem, 'quantity'>) => {
     setItems(prev => {
@@ -75,7 +99,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     ));
   };
 
-  const clearCart = () => setItems([]);
+  const clearCart = () => {
+    setItems([]);
+    markAsConverted();
+  };
+
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
 

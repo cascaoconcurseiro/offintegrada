@@ -9,7 +9,6 @@ import TechBanner from '@/components/TechBanner';
 import ProductGrid from '@/components/ProductGrid';
 import SmartRecommendations from '@/components/SmartRecommendations';
 import CustomerTestimonials from '@/components/CustomerTestimonials';
-import TestimonialsSection from '@/components/TestimonialsSection';
 import LookbookSection from '@/components/LookbookSection';
 import NewsletterSection from '@/components/NewsletterSection';
 import Footer from '@/components/Footer';
@@ -18,6 +17,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import UrgencyBanner from '@/components/UrgencyBanner';
 import FreeShippingBar from '@/components/FreeShippingBar';
 import SocialProof from '@/components/SocialProof';
+import UrgencyScarcity from '@/components/UrgencyScarcity';
 
 const Index = () => {
   return (
@@ -73,10 +73,6 @@ const Index = () => {
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <TestimonialsSection />
-      </ErrorBoundary>
-      
-      <ErrorBoundary>
         <LookbookSection />
       </ErrorBoundary>
       
@@ -85,6 +81,8 @@ const Index = () => {
       </ErrorBoundary>
       
       <Footer />
+      
+      <UrgencyScarcity />
     </div>
   );
 };
