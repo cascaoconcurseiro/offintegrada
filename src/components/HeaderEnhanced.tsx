@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Menu, Search, User, Heart, X } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
@@ -10,10 +9,11 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import SideCart from './SideCart';
 import NotificationSystem from './NotificationSystem';
 import WishlistModal from './WishlistModal';
+import IntelligentSearch from './IntelligentSearch';
 
 const HeaderEnhanced = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const [showWishlist, setShowWishlist] = useState(false);
   const { getCartCount } = useCart();
   const { items: wishlistItems } = useWishlist();
@@ -62,39 +62,13 @@ const HeaderEnhanced = () => {
             {/* Right side icons */}
             <div className="flex items-center space-x-4">
               {/* Search */}
-              <div className="hidden sm:block">
-                {isSearchOpen ? (
-                  <div className="flex items-center">
-                    <Input
-                      placeholder="Buscar produtos..."
-                      className="w-64"
-                      autoFocus
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsSearchOpen(false)}
-                    >
-                      <X className="h-5 w-5" />
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsSearchOpen(true)}
-                  >
-                    <Search className="h-6 w-6" />
-                  </Button>
-                )}
-              </div>
-
-              {/* Mobile search */}
-              <div className="sm:hidden">
-                <Button variant="ghost" size="icon">
-                  <Search className="h-6 w-6" />
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowSearch(true)}
+              >
+                <Search className="h-6 w-6" />
+              </Button>
 
               {/* User Account */}
               <Button variant="ghost" size="icon" asChild>
@@ -145,6 +119,12 @@ const HeaderEnhanced = () => {
           )}
         </div>
       </header>
+
+      {/* Search Modal */}
+      <IntelligentSearch
+        isOpen={showSearch}
+        onClose={() => setShowSearch(false)}
+      />
 
       {/* Wishlist Modal */}
       <WishlistModal

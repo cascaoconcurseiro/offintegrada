@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
@@ -12,7 +13,7 @@ import ProductImageGallery from '@/components/ProductImageGallery';
 import ProductInfo from '@/components/ProductInfo';
 import ProductSelection from '@/components/ProductSelection';
 import ProductBreadcrumb from '@/components/ProductBreadcrumb';
-import ProductSuggestions from '@/components/ProductSuggestions';
+import IntelligentSuggestions from '@/components/IntelligentSuggestions';
 import ProductQuickView from '@/components/ProductQuickView';
 import ProductReviewsInline from '@/components/ProductReviewsInline';
 import ProductTechnicalInfo from '@/components/ProductTechnicalInfo';
@@ -105,41 +106,41 @@ const ProductDetailPage = () => {
     }
   };
 
-  const handleSuggestionAddToCart = (product: any) => {
+  const handleSuggestionAddToCart = (suggestionProduct: any) => {
     addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      size: product.sizes[0],
-      color: product.colors[0]
+      id: suggestionProduct.id,
+      name: suggestionProduct.name,
+      price: suggestionProduct.price,
+      image: suggestionProduct.image,
+      size: suggestionProduct.sizes?.[0] || 'M',
+      color: suggestionProduct.colors?.[0] || 'Preto'
     });
     
     toast({
       title: "Produto adicionado!",
-      description: `${product.name} foi adicionado ao carrinho.`,
+      description: `${suggestionProduct.name} foi adicionado ao carrinho.`,
     });
   };
 
-  const handleSuggestionWishlistToggle = (product: any) => {
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
+  const handleSuggestionWishlistToggle = (suggestionProduct: any) => {
+    if (isInWishlist(suggestionProduct.id)) {
+      removeFromWishlist(suggestionProduct.id);
       toast({
         title: "Removido da lista de desejos",
-        description: `${product.name} foi removido da sua lista de desejos.`,
+        description: `${suggestionProduct.name} foi removido da sua lista de desejos.`,
       });
     } else {
       addToWishlist({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        category: product.category,
-        gender: product.gender
+        id: suggestionProduct.id,
+        name: suggestionProduct.name,
+        price: suggestionProduct.price,
+        image: suggestionProduct.image,
+        category: suggestionProduct.category,
+        gender: suggestionProduct.gender
       });
       toast({
         title: "Adicionado à lista de desejos",
-        description: `${product.name} foi adicionado à sua lista de desejos.`,
+        description: `${suggestionProduct.name} foi adicionado à sua lista de desejos.`,
       });
     }
   };
@@ -225,15 +226,12 @@ const ProductDetailPage = () => {
           </Tabs>
         </div>
 
-        {/* Product Suggestions */}
-        <ProductSuggestions
-          currentProductId={product.id}
-          category={product.category}
-          gender={product.gender}
+        {/* Intelligent Suggestions */}
+        <IntelligentSuggestions
+          currentProduct={product}
           onAddToCart={handleSuggestionAddToCart}
           onWishlistToggle={handleSuggestionWishlistToggle}
           onQuickView={setQuickViewProduct}
-          onShowReviews={setReviewsProduct}
           isInWishlist={isInWishlist}
         />
       </div>

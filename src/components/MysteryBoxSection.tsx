@@ -7,7 +7,7 @@ import { Gift, Sparkles } from 'lucide-react';
 const MysteryBoxSection = () => {
   return (
     <section className="py-16 bg-gradient-to-r from-gray-900 to-black text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M20 20c0 0 0-8 0-8s8 0 8 0 0 8 0 8-8 0-8 0z"/%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M20 20c0 0 0-8 0-8s8 0 8 0 0 8 0 8-8 0-8 0z\"/%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
       
       <div className="container mx-auto px-4 relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -70,7 +70,6 @@ const MysteryBoxSection = () => {
               </div>
             </div>
             
-            {/* Elementos decorativos */}
             <div className="absolute top-4 right-4 w-8 h-8 bg-yellow-400 rounded-full animate-pulse"></div>
             <div className="absolute bottom-8 left-8 w-6 h-6 bg-white rounded-full animate-bounce"></div>
           </div>
