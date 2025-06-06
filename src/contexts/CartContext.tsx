@@ -1,6 +1,5 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { useAbandonedCart } from '@/hooks/useAbandonedCart';
 
 export interface CartItem {
   id: number;
@@ -23,6 +22,7 @@ interface CartContextType {
   closeCart: () => void;
   getTotal: () => number;
   getItemCount: () => number;
+  markAsConverted: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -38,7 +38,7 @@ export const useCart = () => {
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const { markAsConverted } = useAbandonedCart();
+  const [isTracking, setIsTracking] = useState(true);
 
   // Salvar carrinho no localStorage sempre que mudar
   useEffect(() => {
@@ -61,6 +61,31 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
     }
   }, []);
+
+  // Detectar quando o usuário está prestes a sair
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (items.length > 0 && isTracking) {
+        const abandonedCart = {
+          items,
+          timestamp: Date.now(),
+          sessionId: Math.random().toString(36).substr(2, 9),
+        };
+        
+        localStorage.setItem('abandonedCart', JSON.stringify(abandonedCart));
+        
+        e.preventDefault();
+        e.returnValue = 'Você tem itens no seu carrinho. Tem certeza que deseja sair?';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [items, isTracking]);
 
   const addItem = (newItem: Omit<CartItem, 'quantity'>) => {
     setItems(prev => {
@@ -104,6 +129,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     markAsConverted();
   };
 
+  const markAsConverted = () => {
+    setIsTracking(false);
+    localStorage.removeItem('abandonedCart');
+  };
+
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
 
@@ -121,7 +151,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       openCart,
       closeCart,
       getTotal,
-      getItemCount
+      getItemCount,
+      markAsConverted
     }}>
       {children}
     </CartContext.Provider>

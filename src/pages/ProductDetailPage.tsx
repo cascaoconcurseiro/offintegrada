@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
@@ -13,6 +12,7 @@ import ProductImageGallery from '@/components/ProductImageGallery';
 import ProductInfo from '@/components/ProductInfo';
 import ProductSelection from '@/components/ProductSelection';
 import ProductBreadcrumb from '@/components/ProductBreadcrumb';
+import ProductRecommendationBar from '@/components/ProductRecommendationBar';
 import IntelligentSuggestions from '@/components/IntelligentSuggestions';
 import ProductQuickView from '@/components/ProductQuickView';
 import ProductReviewsInline from '@/components/ProductReviewsInline';
@@ -47,7 +47,7 @@ const ProductDetailPage = () => {
     ],
     sizes: ["P", "M", "G", "GG"],
     colors: ["Preto", "Branco", "Cinza"],
-    availableSizes: { "P": 5, "M": 10, "G": 8, "GG": 3 },
+    availableSizes: { "P": 5, "M": 10, "G": 3, "GG": 1 },
     isNew: true,
     sale: true,
     description: "Leveza e respirabilidade para seus treinos mais intensos. Tecido Dry Fit que afasta o suor do corpo, mantendo você seco durante toda a atividade física. Design moderno com corte anatômico que acompanha os movimentos do corpo.",
@@ -63,6 +63,15 @@ const ProductDetailPage = () => {
       toast({
         title: "Selecione um tamanho",
         description: "Por favor, escolha um tamanho antes de adicionar ao carrinho.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (product.availableSizes[selectedSize] === 0) {
+      toast({
+        title: "Produto indisponível",
+        description: "Este tamanho está esgotado no momento.",
         variant: "destructive"
       });
       return;
@@ -169,6 +178,8 @@ const ProductDetailPage = () => {
           />
 
           <div className="space-y-8">
+            <ProductRecommendationBar />
+            
             <ProductInfo
               name={product.name}
               price={product.price}
@@ -188,6 +199,7 @@ const ProductDetailPage = () => {
               selectedSize={selectedSize}
               selectedColor={selectedColor}
               isInWishlist={isInWishlist(product.id)}
+              category={product.category}
               onSizeSelect={setSelectedSize}
               onColorSelect={setSelectedColor}
               onAddToCart={handleAddToCart}

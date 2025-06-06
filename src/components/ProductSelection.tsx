@@ -1,7 +1,9 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Heart } from 'lucide-react';
+import { ShoppingBag, Heart, Zap } from 'lucide-react';
+import ProductSizeChart from './ProductSizeChart';
+import ProductStockIndicator from './ProductStockIndicator';
 
 interface ProductSelectionProps {
   sizes: string[];
@@ -10,6 +12,7 @@ interface ProductSelectionProps {
   selectedSize: string;
   selectedColor: string;
   isInWishlist: boolean;
+  category: string;
   onSizeSelect: (size: string) => void;
   onColorSelect: (color: string) => void;
   onAddToCart: () => void;
@@ -23,6 +26,7 @@ const ProductSelection = ({
   selectedSize,
   selectedColor,
   isInWishlist,
+  category,
   onSizeSelect,
   onColorSelect,
   onAddToCart,
@@ -32,28 +36,43 @@ const ProductSelection = ({
     <div className="space-y-6">
       {/* Size Selection */}
       <div>
-        <h3 className="font-oswald font-medium mb-3 uppercase tracking-wider">Tamanho</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-oswald font-medium uppercase tracking-wider">Tamanho</h3>
+          <ProductSizeChart category={category} />
+        </div>
         <div className="grid grid-cols-4 gap-3">
           {sizes.map((size) => {
             const isAvailable = availableSizes[size] > 0;
+            const isLowStock = availableSizes[size] <= 3 && availableSizes[size] > 0;
             return (
               <button
                 key={size}
                 onClick={() => isAvailable && onSizeSelect(size)}
                 disabled={!isAvailable}
-                className={`p-4 border text-sm font-roboto font-medium transition-colors ${
+                className={`relative p-4 border text-sm font-roboto font-medium transition-all duration-200 ${
                   selectedSize === size
-                    ? 'bg-black text-white border-black'
+                    ? 'bg-black text-white border-black scale-105'
                     : isAvailable
-                    ? 'bg-white text-black border-gray-300 hover:border-black'
+                    ? 'bg-white text-black border-gray-300 hover:border-black hover:scale-105'
                     : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
                 }`}
               >
                 {size}
-                {!isAvailable && <span className="block text-xs">Indisponível</span>}
+                {isLowStock && isAvailable && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                )}
+                {!isAvailable && <span className="block text-xs">Esgotado</span>}
               </button>
             );
           })}
+        </div>
+        
+        {/* Stock Indicator */}
+        <div className="mt-3">
+          <ProductStockIndicator 
+            availableSizes={availableSizes} 
+            selectedSize={selectedSize} 
+          />
         </div>
       </div>
 
@@ -65,10 +84,10 @@ const ProductSelection = ({
             <button
               key={color}
               onClick={() => onColorSelect(color)}
-              className={`px-6 py-3 border text-sm font-roboto transition-colors ${
+              className={`px-6 py-3 border text-sm font-roboto transition-all duration-200 ${
                 selectedColor === color
-                  ? 'bg-black text-white border-black'
-                  : 'bg-white text-black border-gray-300 hover:border-black'
+                  ? 'bg-black text-white border-black scale-105'
+                  : 'bg-white text-black border-gray-300 hover:border-black hover:scale-105'
               }`}
             >
               {color}
@@ -81,22 +100,34 @@ const ProductSelection = ({
       <div className="space-y-4">
         <Button
           onClick={onAddToCart}
-          className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider"
+          disabled={!selectedSize || availableSizes[selectedSize] === 0}
+          className="w-full bg-black hover:bg-gray-800 font-roboto font-medium uppercase tracking-wider transition-all duration-200 hover:scale-105 disabled:hover:scale-100"
           size="lg"
         >
           <ShoppingBag className="w-5 h-5 mr-2" />
-          ADICIONAR AO CARRINHO
+          {!selectedSize ? 'SELECIONE UM TAMANHO' : 'ADICIONAR AO CARRINHO'}
         </Button>
         
-        <Button
-          onClick={onWishlistToggle}
-          variant="outline"
-          className="w-full font-roboto font-medium uppercase tracking-wider"
-          size="lg"
-        >
-          <Heart className={`w-5 h-5 mr-2 ${isInWishlist ? 'fill-current' : ''}`} />
-          {isInWishlist ? 'REMOVER DOS FAVORITOS' : 'ADICIONAR AOS FAVORITOS'}
-        </Button>
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            onClick={onWishlistToggle}
+            variant="outline"
+            className="font-roboto font-medium uppercase tracking-wider transition-all duration-200 hover:scale-105"
+            size="lg"
+          >
+            <Heart className={`w-5 h-5 mr-2 ${isInWishlist ? 'fill-current text-red-500' : ''}`} />
+            FAVORITOS
+          </Button>
+          
+          <Button
+            variant="outline"
+            className="font-roboto font-medium uppercase tracking-wider bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300 text-yellow-800 hover:bg-yellow-100 transition-all duration-200 hover:scale-105"
+            size="lg"
+          >
+            <Zap className="w-5 h-5 mr-2" />
+            COMPRA RÁPIDA
+          </Button>
+        </div>
       </div>
     </div>
   );
