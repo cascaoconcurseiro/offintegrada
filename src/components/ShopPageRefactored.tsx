@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,8 @@ const ShopPageRefactored = () => {
   const [selectedGender, setSelectedGender] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState(500);
   const [sortBy, setSortBy] = useState('default');
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,6 +41,7 @@ const ShopPageRefactored = () => {
       ],
       sizes: ["P", "M", "G", "GG"],
       colors: ["Preto", "Branco", "Cinza"],
+      brand: "Premium",
       isNew: true,
       sale: true,
       description: "Leveza e respirabilidade para seus treinos mais intensos. Tecido Dry Fit que afasta o suor.",
@@ -55,6 +59,7 @@ const ShopPageRefactored = () => {
       image: "https://images.unsplash.com/photo-1583743814966-8936f37f8e8c?w=400&h=500&fit=crop&crop=center",
       sizes: ["P", "M", "G"],
       colors: ["Preto", "Azul"],
+      brand: "Pro",
       isNew: false,
       sale: false,
       description: "Conforto e liberdade de movimentos. Ideal para musculação e treinos funcionais.",
@@ -73,6 +78,7 @@ const ShopPageRefactored = () => {
       image: "https://images.unsplash.com/photo-1506629905138-e9edb9c83ee5?w=400&h=500&fit=crop&crop=center",
       sizes: ["P", "M", "G"],
       colors: ["Preto", "Rosa"],
+      brand: "Tech",
       isNew: false,
       sale: true,
       description: "Alta compressão para suporte muscular e modelagem perfeita. Cintura alta para maior conforto.",
@@ -90,6 +96,7 @@ const ShopPageRefactored = () => {
       image: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=500&fit=crop&crop=center",
       sizes: ["P", "M", "G"],
       colors: ["Preto", "Branco"],
+      brand: "Basic",
       isNew: true,
       sale: false,
       description: "Top com alta sustentação, ideal para atividades de impacto. Design moderno e confortável.",
@@ -143,6 +150,8 @@ const ShopPageRefactored = () => {
     setSelectedGender('all');
     setSelectedCategory('all');
     setSelectedSizes([]);
+    setSelectedColors([]);
+    setSelectedBrands([]);
     setPriceRange(500);
     setSearchTerm('');
   };
@@ -169,11 +178,13 @@ const ShopPageRefactored = () => {
     const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
     const priceMatch = product.price <= priceRange;
     const sizeMatch = selectedSizes.length === 0 || selectedSizes.some(size => product.sizes.includes(size));
+    const colorMatch = selectedColors.length === 0 || selectedColors.some(color => product.colors.includes(color));
+    const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(product.brand);
     const searchMatch = searchTerm === '' || 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.category.toLowerCase().includes(searchTerm.toLowerCase());
     
-    return genderMatch && categoryMatch && priceMatch && sizeMatch && searchMatch;
+    return genderMatch && categoryMatch && priceMatch && sizeMatch && colorMatch && brandMatch && searchMatch;
   }));
 
   return (
@@ -188,6 +199,10 @@ const ShopPageRefactored = () => {
             setSelectedCategory={setSelectedCategory}
             selectedSizes={selectedSizes}
             setSelectedSizes={setSelectedSizes}
+            selectedColors={selectedColors}
+            setSelectedColors={setSelectedColors}
+            selectedBrands={selectedBrands}
+            setSelectedBrands={setSelectedBrands}
             priceRange={priceRange}
             setPriceRange={setPriceRange}
             sortBy={sortBy}
