@@ -49,6 +49,18 @@ import {
   Camera as InstagramIcon,
   Video as VideoIcon
 } from 'lucide-react';
+import { 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  PieChart, 
+  Pie, 
+  Cell 
+} from 'recharts';
 import { toast } from '@/hooks/use-toast';
 
 const MarketingIntegrations = () => {

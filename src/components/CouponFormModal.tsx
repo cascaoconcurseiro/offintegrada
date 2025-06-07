@@ -3,28 +3,28 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { 
   Gift, 
-  Save, 
-  CalendarIcon, 
   Percent, 
-  DollarSign,
-  Users,
+  DollarSign, 
+  Calendar, 
+  Users, 
   Package,
+  Save,
+  Copy,
+  Eye,
+  Settings,
   Target,
-  Clock,
-  Copy
+  AlertTriangle,
+  CheckCircle
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 interface CouponFormModalProps {
   open: boolean;
@@ -34,40 +34,52 @@ interface CouponFormModalProps {
 const CouponFormModal = ({ open, onOpenChange }: CouponFormModalProps) => {
   const [couponData, setCouponData] = useState({
     code: '',
-    type: 'percentage', // percentage, fixed, free_shipping
-    value: '',
+    name: '',
     description: '',
+    type: 'percentage', // percentage, fixed, shipping
+    value: '',
     minOrderValue: '',
     maxDiscount: '',
     usageLimit: '',
-    usagePerCustomer: '',
-    startDate: undefined as Date | undefined,
-    endDate: undefined as Date | undefined,
+    userLimit: '',
+    startDate: '',
+    endDate: '',
     isActive: true,
-    allowFirstTimeOnly: false,
-    allowCombineWithOther: false,
+    isPublic: true,
     categories: [] as string[],
-    excludedCategories: [] as string[],
     products: [] as string[],
-    excludedProducts: [] as string[]
+    excludedCategories: [] as string[],
+    excludedProducts: [] as string[],
+    firstTimeCustomer: false,
+    stackable: false,
+    autoApply: false
   });
 
+  const [activeTab, setActiveTab] = useState('basic');
+
   const generateCode = () => {
-    const codes = ['WELCOME10', 'SAVE20', 'BLACKFRIDAY', 'NEWUSER', 'FRETE25', 'DESCONTO15'];
-    const randomCode = codes[Math.floor(Math.random() * codes.length)] + Math.floor(Math.random() * 100);
-    setCouponData(prev => ({ ...prev, code: randomCode }));
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setCouponData(prev => ({ ...prev, code: result }));
+    toast({
+      title: "Código Gerado",
+      description: `Código ${result} foi gerado automaticamente!`,
+    });
   };
 
   const handleSave = () => {
     console.log('Saving coupon:', couponData);
     toast({
-      title: "Cupom Criado",
-      description: `Cupom ${couponData.code} foi criado com sucesso!`,
+      title: "Cupom Salvo",
+      description: `Cupom ${couponData.name || couponData.code} foi criado com sucesso!`,
     });
     onOpenChange(false);
   };
 
-  const copyCode = () => {
+  const handleCopyCode = () => {
     navigator.clipboard.writeText(couponData.code);
     toast({
       title: "Código Copiado",
@@ -75,22 +87,35 @@ const CouponFormModal = ({ open, onOpenChange }: CouponFormModalProps) => {
     });
   };
 
+  const calculateDiscount = () => {
+    const orderValue = 199.90; // Exemplo
+    if (couponData.type === 'percentage') {
+      const discount = (orderValue * parseFloat(couponData.value || '0')) / 100;
+      const maxDiscount = parseFloat(couponData.maxDiscount || '0');
+      return maxDiscount > 0 ? Math.min(discount, maxDiscount) : discount;
+    } else if (couponData.type === 'fixed') {
+      return parseFloat(couponData.value || '0');
+    }
+    return 0;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-oswald text-2xl uppercase flex items-center gap-2">
             <Gift className="w-6 h-6" />
-            Novo Cupom de Desconto
+            Sistema Avançado de Cupons
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="basic">
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="basic">Básico</TabsTrigger>
             <TabsTrigger value="conditions">Condições</TabsTrigger>
-            <TabsTrigger value="usage">Uso</TabsTrigger>
-            <TabsTrigger value="products">Produtos</TabsTrigger>
+            <TabsTrigger value="restrictions">Restrições</TabsTrigger>
+            <TabsTrigger value="advanced">Avançado</TabsTrigger>
+            <TabsTrigger value="preview">Preview</TabsTrigger>
           </TabsList>
 
           <TabsContent value="basic" className="space-y-4">
@@ -102,21 +127,44 @@ const CouponFormModal = ({ open, onOpenChange }: CouponFormModalProps) => {
                     id="code"
                     value={couponData.code}
                     onChange={(e) => setCouponData(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
-                    placeholder="DESCONTO20"
+                    placeholder="Ex: BLACKFRIDAY50"
+                    className="uppercase"
                   />
-                  <Button variant="outline" onClick={generateCode}>
-                    <Gift className="w-4 h-4" />
+                  <Button onClick={generateCode} variant="outline" size="sm">
+                    Gerar
                   </Button>
                   {couponData.code && (
-                    <Button variant="outline" onClick={copyCode}>
+                    <Button onClick={handleCopyCode} variant="outline" size="sm">
                       <Copy className="w-4 h-4" />
                     </Button>
                   )}
                 </div>
               </div>
-
               <div>
-                <Label>Tipo de Desconto</Label>
+                <Label htmlFor="name">Nome do Cupom</Label>
+                <Input
+                  id="name"
+                  value={couponData.name}
+                  onChange={(e) => setCouponData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Ex: Black Friday 2024"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="description">Descrição</Label>
+              <Textarea
+                id="description"
+                value={couponData.description}
+                onChange={(e) => setCouponData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Descrição do cupom para uso interno..."
+                rows={3}
+              />
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="type">Tipo de Desconto</Label>
                 <select 
                   className="w-full p-2 border rounded"
                   value={couponData.type}
@@ -124,179 +172,89 @@ const CouponFormModal = ({ open, onOpenChange }: CouponFormModalProps) => {
                 >
                   <option value="percentage">Porcentagem (%)</option>
                   <option value="fixed">Valor Fixo (R$)</option>
-                  <option value="free_shipping">Frete Grátis</option>
+                  <option value="shipping">Frete Grátis</option>
                 </select>
               </div>
-            </div>
-
-            {couponData.type !== 'free_shipping' && (
-              <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="value">
+                  Valor {couponData.type === 'percentage' ? '(%)' : couponData.type === 'fixed' ? '(R$)' : ''}
+                </Label>
+                <Input
+                  id="value"
+                  type="number"
+                  value={couponData.value}
+                  onChange={(e) => setCouponData(prev => ({ ...prev, value: e.target.value }))}
+                  placeholder={couponData.type === 'percentage' ? '10' : '50.00'}
+                  disabled={couponData.type === 'shipping'}
+                />
+              </div>
+              {couponData.type === 'percentage' && (
                 <div>
-                  <Label htmlFor="value">
-                    Valor do Desconto {couponData.type === 'percentage' ? '(%)' : '(R$)'}
-                  </Label>
+                  <Label htmlFor="maxDiscount">Desconto Máximo (R$)</Label>
                   <Input
-                    id="value"
+                    id="maxDiscount"
                     type="number"
-                    value={couponData.value}
-                    onChange={(e) => setCouponData(prev => ({ ...prev, value: e.target.value }))}
-                    placeholder={couponData.type === 'percentage' ? '10' : '25.00'}
+                    value={couponData.maxDiscount}
+                    onChange={(e) => setCouponData(prev => ({ ...prev, maxDiscount: e.target.value }))}
+                    placeholder="100.00"
                   />
                 </div>
-
-                {couponData.type === 'percentage' && (
-                  <div>
-                    <Label htmlFor="maxDiscount">Desconto Máximo (R$)</Label>
-                    <Input
-                      id="maxDiscount"
-                      type="number"
-                      value={couponData.maxDiscount}
-                      onChange={(e) => setCouponData(prev => ({ ...prev, maxDiscount: e.target.value }))}
-                      placeholder="100.00"
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div>
-              <Label htmlFor="description">Descrição</Label>
-              <Input
-                id="description"
-                value={couponData.description}
-                onChange={(e) => setCouponData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Descrição do cupom para o cliente"
-              />
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Data de Início</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {couponData.startDate ? format(couponData.startDate, "dd/MM/yyyy", { locale: ptBR }) : "Selecionar data"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={couponData.startDate}
-                      onSelect={(date) => setCouponData(prev => ({ ...prev, startDate: date }))}
-                      locale={ptBR}
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Label htmlFor="startDate">Data de Início</Label>
+                <Input
+                  id="startDate"
+                  type="datetime-local"
+                  value={couponData.startDate}
+                  onChange={(e) => setCouponData(prev => ({ ...prev, startDate: e.target.value }))}
+                />
               </div>
-
               <div>
-                <Label>Data de Fim</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {couponData.endDate ? format(couponData.endDate, "dd/MM/yyyy", { locale: ptBR }) : "Selecionar data"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={couponData.endDate}
-                      onSelect={(date) => setCouponData(prev => ({ ...prev, endDate: date }))}
-                      locale={ptBR}
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Label htmlFor="endDate">Data de Fim</Label>
+                <Input
+                  id="endDate"
+                  type="datetime-local"
+                  value={couponData.endDate}
+                  onChange={(e) => setCouponData(prev => ({ ...prev, endDate: e.target.value }))}
+                />
               </div>
             </div>
 
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="font-medium mb-2">Preview do Cupom</h3>
-                <div className="border-2 border-dashed border-blue-300 p-4 rounded-lg bg-blue-50">
-                  <div className="text-center">
-                    <div className="font-bold text-2xl text-blue-600">
-                      {couponData.code || 'CODIGO'}
-                    </div>
-                    <div className="text-lg text-blue-800 mt-1">
-                      {couponData.type === 'percentage' && `${couponData.value || '0'}% OFF`}
-                      {couponData.type === 'fixed' && `R$ ${couponData.value || '0'} OFF`}
-                      {couponData.type === 'free_shipping' && 'FRETE GRÁTIS'}
-                    </div>
-                    <div className="text-sm text-gray-600 mt-2">
-                      {couponData.description || 'Descrição do cupom'}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="flex gap-6">
+              <div className="flex items-center justify-between">
+                <Label>Cupom Ativo</Label>
+                <Switch
+                  checked={couponData.isActive}
+                  onCheckedChange={(checked) => setCouponData(prev => ({ ...prev, isActive: checked }))}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Público</Label>
+                <Switch
+                  checked={couponData.isPublic}
+                  onCheckedChange={(checked) => setCouponData(prev => ({ ...prev, isPublic: checked }))}
+                />
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="conditions" className="space-y-4">
-            <div>
-              <Label htmlFor="minOrderValue">Valor Mínimo do Pedido (R$)</Label>
-              <Input
-                id="minOrderValue"
-                type="number"
-                value={couponData.minOrderValue}
-                onChange={(e) => setCouponData(prev => ({ ...prev, minOrderValue: e.target.value }))}
-                placeholder="100.00"
-              />
-              <p className="text-xs text-gray-600 mt-1">
-                Deixe vazio para não ter valor mínimo
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Apenas Primeira Compra</Label>
-                  <p className="text-sm text-gray-600">Válido apenas para novos clientes</p>
-                </div>
-                <Switch
-                  checked={couponData.allowFirstTimeOnly}
-                  onCheckedChange={(checked) => setCouponData(prev => ({ ...prev, allowFirstTimeOnly: checked }))}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Combinar com Outros Cupons</Label>
-                  <p className="text-sm text-gray-600">Permite usar junto com outros cupons</p>
-                </div>
-                <Switch
-                  checked={couponData.allowCombineWithOther}
-                  onCheckedChange={(checked) => setCouponData(prev => ({ ...prev, allowCombineWithOther: checked }))}
-                />
-              </div>
-            </div>
-
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="font-medium mb-2">Resumo das Condições</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Valor Mínimo:</span>
-                    <span>{couponData.minOrderValue ? `R$ ${couponData.minOrderValue}` : 'Sem limite'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Primeira Compra:</span>
-                    <span>{couponData.allowFirstTimeOnly ? 'Sim' : 'Não'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Combinar Cupons:</span>
-                    <span>{couponData.allowCombineWithOther ? 'Sim' : 'Não'}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="usage" className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="usageLimit">Limite Total de Uso</Label>
+                <Label htmlFor="minOrderValue">Valor Mínimo do Pedido (R$)</Label>
+                <Input
+                  id="minOrderValue"
+                  type="number"
+                  value={couponData.minOrderValue}
+                  onChange={(e) => setCouponData(prev => ({ ...prev, minOrderValue: e.target.value }))}
+                  placeholder="99.00"
+                />
+              </div>
+              <div>
+                <Label htmlFor="usageLimit">Limite de Uso Total</Label>
                 <Input
                   id="usageLimit"
                   type="number"
@@ -304,94 +262,56 @@ const CouponFormModal = ({ open, onOpenChange }: CouponFormModalProps) => {
                   onChange={(e) => setCouponData(prev => ({ ...prev, usageLimit: e.target.value }))}
                   placeholder="100"
                 />
-                <p className="text-xs text-gray-600 mt-1">
-                  Deixe vazio para uso ilimitado
-                </p>
               </div>
+            </div>
 
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="usagePerCustomer">Limite por Cliente</Label>
+                <Label htmlFor="userLimit">Limite por Cliente</Label>
                 <Input
-                  id="usagePerCustomer"
+                  id="userLimit"
                   type="number"
-                  value={couponData.usagePerCustomer}
-                  onChange={(e) => setCouponData(prev => ({ ...prev, usagePerCustomer: e.target.value }))}
+                  value={couponData.userLimit}
+                  onChange={(e) => setCouponData(prev => ({ ...prev, userLimit: e.target.value }))}
                   placeholder="1"
                 />
-                <p className="text-xs text-gray-600 mt-1">
-                  Quantas vezes cada cliente pode usar
-                </p>
+              </div>
+              <div className="flex items-center justify-between pt-6">
+                <Label>Apenas Primeiro Pedido</Label>
+                <Switch
+                  checked={couponData.firstTimeCustomer}
+                  onCheckedChange={(checked) => setCouponData(prev => ({ ...prev, firstTimeCustomer: checked }))}
+                />
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div>
-                <Label>Cupom Ativo</Label>
-                <p className="text-sm text-gray-600">Cupom disponível para uso</p>
-              </div>
-              <Switch
-                checked={couponData.isActive}
-                onCheckedChange={(checked) => setCouponData(prev => ({ ...prev, isActive: checked }))}
-              />
-            </div>
-
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="font-medium mb-4">Estatísticas de Uso</h3>
-                <div className="grid grid-cols-4 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-blue-600">0</div>
-                    <div className="text-xs text-gray-600">Usos Totais</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-green-600">R$ 0</div>
-                    <div className="text-xs text-gray-600">Desconto Aplicado</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-purple-600">0</div>
-                    <div className="text-xs text-gray-600">Clientes Únicos</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-orange-600">0%</div>
-                    <div className="text-xs text-gray-600">Taxa de Conversão</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="products" className="space-y-4">
             <div>
               <Label>Categorias Incluídas</Label>
-              <div className="grid grid-cols-3 gap-2 mt-2">
-                {['Camisetas', 'Calças', 'Shorts', 'Jaquetas', 'Acessórios', 'Tênis'].map((category) => (
+              <div className="mt-2 space-y-2">
+                {['Camisetas', 'Calças', 'Shorts', 'Jaquetas', 'Acessórios'].map((category) => (
                   <label key={category} className="flex items-center space-x-2">
                     <input
                       type="checkbox"
                       checked={couponData.categories.includes(category)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setCouponData(prev => ({
-                            ...prev,
-                            categories: [...prev.categories, category]
-                          }));
+                          setCouponData(prev => ({ ...prev, categories: [...prev.categories, category] }));
                         } else {
-                          setCouponData(prev => ({
-                            ...prev,
-                            categories: prev.categories.filter(c => c !== category)
-                          }));
+                          setCouponData(prev => ({ ...prev, categories: prev.categories.filter(c => c !== category) }));
                         }
                       }}
                     />
-                    <span className="text-sm">{category}</span>
+                    <span>{category}</span>
                   </label>
                 ))}
               </div>
             </div>
+          </TabsContent>
 
+          <TabsContent value="restrictions" className="space-y-4">
             <div>
               <Label>Categorias Excluídas</Label>
-              <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="mt-2 space-y-2">
                 {['Sale', 'Outlet', 'Liquidação'].map((category) => (
                   <label key={category} className="flex items-center space-x-2">
                     <input
@@ -399,55 +319,157 @@ const CouponFormModal = ({ open, onOpenChange }: CouponFormModalProps) => {
                       checked={couponData.excludedCategories.includes(category)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setCouponData(prev => ({
-                            ...prev,
-                            excludedCategories: [...prev.excludedCategories, category]
-                          }));
+                          setCouponData(prev => ({ ...prev, excludedCategories: [...prev.excludedCategories, category] }));
                         } else {
-                          setCouponData(prev => ({
-                            ...prev,
-                            excludedCategories: prev.excludedCategories.filter(c => c !== category)
-                          }));
+                          setCouponData(prev => ({ ...prev, excludedCategories: prev.excludedCategories.filter(c => c !== category) }));
                         }
                       }}
                     />
-                    <span className="text-sm">{category}</span>
+                    <span>{category}</span>
                   </label>
                 ))}
               </div>
             </div>
 
+            <div className="border-t pt-4">
+              <h3 className="font-medium mb-3">Produtos Específicos</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Produtos Incluídos</Label>
+                  <textarea 
+                    className="w-full p-2 border rounded h-20 text-sm"
+                    placeholder="SKU001, SKU002, SKU003..."
+                    value={couponData.products.join(', ')}
+                    onChange={(e) => setCouponData(prev => ({ 
+                      ...prev, 
+                      products: e.target.value.split(',').map(p => p.trim()).filter(p => p) 
+                    }))}
+                  />
+                </div>
+                <div>
+                  <Label>Produtos Excluídos</Label>
+                  <textarea 
+                    className="w-full p-2 border rounded h-20 text-sm"
+                    placeholder="SKU004, SKU005, SKU006..."
+                    value={couponData.excludedProducts.join(', ')}
+                    onChange={(e) => setCouponData(prev => ({ 
+                      ...prev, 
+                      excludedProducts: e.target.value.split(',').map(p => p.trim()).filter(p => p) 
+                    }))}
+                  />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="advanced" className="space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <Label>Empilhável com Outros Cupons</Label>
+                  <p className="text-sm text-gray-600">Permite uso junto com outros cupons</p>
+                </div>
+                <Switch
+                  checked={couponData.stackable}
+                  onCheckedChange={(checked) => setCouponData(prev => ({ ...prev, stackable: checked }))}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <Label>Aplicação Automática</Label>
+                  <p className="text-sm text-gray-600">Aplica automaticamente quando condições são atendidas</p>
+                </div>
+                <Switch
+                  checked={couponData.autoApply}
+                  onCheckedChange={(checked) => setCouponData(prev => ({ ...prev, autoApply: checked }))}
+                />
+              </div>
+            </div>
+
             <Card>
               <CardContent className="p-4">
-                <h3 className="font-medium mb-2">Resumo de Aplicação</h3>
-                <div className="space-y-2 text-sm">
+                <h3 className="font-medium mb-3">Configurações de Marketing</h3>
+                <div className="space-y-3">
                   <div>
-                    <span className="font-medium">Aplicável em:</span>
-                    <div className="ml-4">
-                      {couponData.categories.length > 0 ? (
-                        <ul className="list-disc list-inside">
-                          {couponData.categories.map((cat, index) => (
-                            <li key={index}>{cat}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <span className="text-gray-600">Todas as categorias</span>
-                      )}
-                    </div>
+                    <Label>Mensagem de Sucesso Personalizada</Label>
+                    <Input placeholder="Parabéns! Você economizou {valor} neste pedido!" />
+                  </div>
+                  <div>
+                    <Label>URL de Redirecionamento</Label>
+                    <Input placeholder="https://..." />
+                  </div>
+                  <div>
+                    <Label>Pixel de Conversão</Label>
+                    <Input placeholder="FB.q('track', 'AddToCart');" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="preview" className="space-y-4">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center space-y-4">
+                  <div className="flex items-center justify-center gap-2">
+                    <Gift className="w-8 h-8 text-green-600" />
+                    <h2 className="text-2xl font-bold">
+                      {couponData.name || 'Novo Cupom'}
+                    </h2>
                   </div>
                   
-                  {couponData.excludedCategories.length > 0 && (
+                  <div className="bg-gray-100 p-4 rounded-lg">
+                    <p className="text-3xl font-bold font-mono tracking-wider">
+                      {couponData.code || 'CÓDIGO'}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
-                      <span className="font-medium">Exceto:</span>
-                      <div className="ml-4">
-                        <ul className="list-disc list-inside">
-                          {couponData.excludedCategories.map((cat, index) => (
-                            <li key={index}>{cat}</li>
-                          ))}
-                        </ul>
-                      </div>
+                      <p className="text-sm text-gray-600">Tipo de Desconto</p>
+                      <p className="font-medium">
+                        {couponData.type === 'percentage' ? 'Porcentagem' : 
+                         couponData.type === 'fixed' ? 'Valor Fixo' : 'Frete Grátis'}
+                      </p>
                     </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Valor</p>
+                      <p className="font-medium">
+                        {couponData.type === 'percentage' ? `${couponData.value}%` :
+                         couponData.type === 'fixed' ? `R$ ${couponData.value}` : 'Grátis'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {couponData.minOrderValue && (
+                    <p className="text-sm text-gray-600">
+                      Válido para pedidos acima de R$ {couponData.minOrderValue}
+                    </p>
                   )}
+
+                  <div className="flex justify-center gap-4">
+                    <Badge className={couponData.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                      {couponData.isActive ? 'Ativo' : 'Inativo'}
+                    </Badge>
+                    <Badge variant="outline">
+                      {couponData.isPublic ? 'Público' : 'Privado'}
+                    </Badge>
+                  </div>
+
+                  {/* Simulação de Desconto */}
+                  <div className="border-t pt-4">
+                    <h3 className="font-medium mb-2">Simulação de Uso</h3>
+                    <div className="bg-blue-50 p-3 rounded">
+                      <p className="text-sm">Pedido de R$ 199,90</p>
+                      <p className="text-lg font-bold text-green-600">
+                        Desconto: R$ {calculateDiscount().toFixed(2)}
+                      </p>
+                      <p className="text-sm">
+                        Total: R$ {(199.90 - calculateDiscount()).toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
