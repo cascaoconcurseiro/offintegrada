@@ -4,27 +4,41 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
 import { 
   Store, 
-  ShoppingBag, 
+  ShoppingCart, 
   Package, 
-  Truck, 
-  DollarSign,
-  CheckCircle,
-  AlertCircle,
+  RefreshCw, 
   Settings,
-  Zap,
-  Globe,
-  Database,
-  Sync,
+  CheckCircle,
+  AlertTriangle,
+  Plus,
+  Edit,
+  Trash2,
+  Upload,
+  Download,
   BarChart3,
+  TrendingUp,
+  DollarSign,
   Users,
-  Mail,
-  Smartphone,
-  CreditCard,
-  Key
+  Globe,
+  Zap,
+  Target,
+  Eye,
+  Clock,
+  Filter,
+  Search,
+  ArrowUpDown,
+  ExternalLink,
+  Key,
+  Shield,
+  Database,
+  Webhook,
+  Code,
+  Link,
+  Activity
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 

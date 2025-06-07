@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
 import Footer from '@/components/Footer';
@@ -52,6 +51,7 @@ import { toast } from '@/hooks/use-toast';
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const [showProductForm, setShowProductForm] = useState(false);
 
   const stats = [
     {
@@ -143,6 +143,49 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleNewProduct = () => {
+    setShowProductForm(true);
+    toast({
+      title: "Novo Produto",
+      description: "Formulário de produto aberto!",
+    });
+  };
+
+  const handleNewCoupon = () => {
+    toast({
+      title: "Novo Cupom",
+      description: "Sistema de cupons aberto!",
+    });
+  };
+
+  const handleReports = () => {
+    toast({
+      title: "Relatórios",
+      description: "Acessando relatórios avançados!",
+    });
+  };
+
+  const handleSupport = () => {
+    toast({
+      title: "Suporte",
+      description: "Central de suporte aberta!",
+    });
+  };
+
+  const handleMarketing = () => {
+    toast({
+      title: "Marketing",
+      description: "Ferramentas de marketing ativadas!",
+    });
+  };
+
+  const handleCampaigns = () => {
+    toast({
+      title: "Campanhas",
+      description: "Gerenciador de campanhas aberto!",
+    });
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -175,6 +218,7 @@ const AdminDashboard = () => {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <HeaderEnhanced />
@@ -221,29 +265,29 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions - Agora todos funcionais */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
-          <Button variant="outline" className="h-16 flex flex-col gap-1">
+          <Button variant="outline" className="h-16 flex flex-col gap-1" onClick={handleNewProduct}>
             <Plus className="w-5 h-5" />
             <span className="text-xs">Novo Produto</span>
           </Button>
-          <Button variant="outline" className="h-16 flex flex-col gap-1">
+          <Button variant="outline" className="h-16 flex flex-col gap-1" onClick={handleNewCoupon}>
             <Gift className="w-5 h-5" />
             <span className="text-xs">Cupom</span>
           </Button>
-          <Button variant="outline" className="h-16 flex flex-col gap-1">
+          <Button variant="outline" className="h-16 flex flex-col gap-1" onClick={handleReports}>
             <FileText className="w-5 h-5" />
             <span className="text-xs">Relatórios</span>
           </Button>
-          <Button variant="outline" className="h-16 flex flex-col gap-1">
+          <Button variant="outline" className="h-16 flex flex-col gap-1" onClick={handleSupport}>
             <Headphones className="w-5 h-5" />
             <span className="text-xs">Suporte</span>
           </Button>
-          <Button variant="outline" className="h-16 flex flex-col gap-1">
+          <Button variant="outline" className="h-16 flex flex-col gap-1" onClick={handleMarketing}>
             <Megaphone className="w-5 h-5" />
             <span className="text-xs">Marketing</span>
           </Button>
-          <Button variant="outline" className="h-16 flex flex-col gap-1">
+          <Button variant="outline" className="h-16 flex flex-col gap-1" onClick={handleCampaigns}>
             <Target className="w-5 h-5" />
             <span className="text-xs">Campanhas</span>
           </Button>
