@@ -38,7 +38,8 @@ import {
   Webhook,
   Code,
   Link,
-  Activity
+  Activity,
+  Truck as ShippingIcon
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -79,7 +80,7 @@ const EcommerceIntegration = () => {
       id: 'shopify',
       name: 'Shopify',
       description: 'Plataforma global de e-commerce',
-      icon: ShoppingBag,
+      icon: ShoppingCart,
       color: 'bg-green-600',
       features: ['Produtos', 'Pedidos', 'Apps', 'Temas', 'Analytics'],
       marketShare: '28%'
@@ -97,7 +98,7 @@ const EcommerceIntegration = () => {
       id: 'lojaintegrada',
       name: 'Loja Integrada',
       description: 'E-commerce brasileiro completo',
-      icon: Truck,
+      icon: ShippingIcon,
       color: 'bg-orange-600',
       features: ['Produtos', 'Marketplace', 'ERP', 'Marketing'],
       marketShare: '12%'
@@ -124,7 +125,7 @@ const EcommerceIntegration = () => {
 
   const syncStats = [
     { name: 'Produtos Sincronizados', value: '2.847', change: '+127 hoje', icon: Package },
-    { name: 'Pedidos Processados', value: '1.234', change: '+89 hoje', icon: ShoppingBag },
+    { name: 'Pedidos Processados', value: '1.234', change: '+89 hoje', icon: ShoppingCart },
     { name: 'Estoque Atualizado', value: '98.7%', change: 'Tempo real', icon: BarChart3 },
     { name: 'Clientes Integrados', value: '15.629', change: '+234 hoje', icon: Users }
   ];
@@ -187,7 +188,7 @@ const EcommerceIntegration = () => {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={syncNow}>
-            <Sync className="w-4 h-4 mr-2" />
+            <RefreshCw className="w-4 h-4 mr-2" />
             Sincronizar Agora
           </Button>
           <Button>

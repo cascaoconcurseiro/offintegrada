@@ -45,7 +45,9 @@ import {
   Code,
   Link,
   Activity,
-  ArrowUpDown
+  ArrowUpDown,
+  Camera as InstagramIcon,
+  Video as VideoIcon
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -118,7 +120,7 @@ const MarketingIntegrations = () => {
       id: 'instagram_ads',
       name: 'Instagram Ads',
       description: 'Campanhas nativas do Instagram',
-      icon: Instagram,
+      icon: InstagramIcon,
       color: 'bg-pink-600',
       category: 'ads',
       features: ['Feed', 'Stories', 'Reels', 'Shopping', 'IGTV']
@@ -127,7 +129,7 @@ const MarketingIntegrations = () => {
       id: 'tiktok_ads',
       name: 'TikTok Ads',
       description: 'Campanhas no TikTok',
-      icon: Video,
+      icon: VideoIcon,
       color: 'bg-black',
       category: 'ads',
       features: ['In-Feed', 'Branded Hashtag', 'TopView', 'Branded Effects']
@@ -233,7 +235,7 @@ const MarketingIntegrations = () => {
           { name: 'Gasto Total', value: 'R$ 26.6k', change: '+8%', icon: DollarSign, color: 'text-blue-600' },
           { name: 'Conversões', value: '892', change: '+23%', icon: ShoppingCart, color: 'text-purple-600' },
           { name: 'CPA Médio', value: 'R$ 29.80', change: '-15%', icon: Target, color: 'text-orange-600' },
-          { name: 'CTR Médio', value: '2.8%', change: '+0.3%', icon: Click, color: 'text-pink-600' },
+          { name: 'CTR Médio', value: '2.8%', change: '+0.3%', icon: MousePointer, color: 'text-pink-600' },
           { name: 'Leads Gerados', value: '3.4k', change: '+34%', icon: Users, color: 'text-indigo-600' }
         ].map((metric, index) => {
           const IconComponent = metric.icon;

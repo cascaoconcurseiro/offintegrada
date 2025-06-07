@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
 import Footer from '@/components/Footer';
@@ -11,6 +12,8 @@ import AdvancedReports from '@/components/AdvancedReports';
 import CartRecovery from '@/components/CartRecovery';
 import ProductManagement from '@/components/ProductManagement';
 import AdminSettings from '@/components/AdminSettings';
+import ProductFormModal from '@/components/ProductFormModal';
+import CouponFormModal from '@/components/CouponFormModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -51,7 +54,9 @@ import { toast } from '@/hooks/use-toast';
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const [activeTab, setActiveTab] = useState('reports');
   const [showProductForm, setShowProductForm] = useState(false);
+  const [showCouponForm, setShowCouponForm] = useState(false);
 
   const stats = [
     {
@@ -145,20 +150,16 @@ const AdminDashboard = () => {
 
   const handleNewProduct = () => {
     setShowProductForm(true);
-    toast({
-      title: "Novo Produto",
-      description: "Formulário de produto aberto!",
-    });
+    console.log('Opening product form modal');
   };
 
   const handleNewCoupon = () => {
-    toast({
-      title: "Novo Cupom",
-      description: "Sistema de cupons aberto!",
-    });
+    setShowCouponForm(true);
+    console.log('Opening coupon form modal');
   };
 
   const handleReports = () => {
+    setActiveTab('reports');
     toast({
       title: "Relatórios",
       description: "Acessando relatórios avançados!",
@@ -167,22 +168,26 @@ const AdminDashboard = () => {
 
   const handleSupport = () => {
     toast({
-      title: "Suporte",
-      description: "Central de suporte aberta!",
+      title: "Central de Suporte",
+      description: "Sistema de suporte ativado - tickets, chat e conhecimento!",
     });
+    // Simulate opening support system
+    window.open('mailto:suporte@offseason.com.br?subject=Suporte Admin&body=Olá, preciso de ajuda com:', '_blank');
   };
 
   const handleMarketing = () => {
+    setActiveTab('marketing');
     toast({
-      title: "Marketing",
-      description: "Ferramentas de marketing ativadas!",
+      title: "Marketing Intelligence",
+      description: "Acessando central de marketing e campanhas!",
     });
   };
 
   const handleCampaigns = () => {
+    setActiveTab('marketing');
     toast({
-      title: "Campanhas",
-      description: "Gerenciador de campanhas aberto!",
+      title: "Gerenciador de Campanhas",
+      description: "Sistema de campanhas multi-plataforma ativado!",
     });
   };
 
@@ -265,7 +270,7 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {/* Quick Actions - Agora todos funcionais */}
+        {/* Quick Actions - Todos funcionais agora */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
           <Button variant="outline" className="h-16 flex flex-col gap-1" onClick={handleNewProduct}>
             <Plus className="w-5 h-5" />
@@ -347,7 +352,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Main Dashboard Tabs */}
-        <Tabs defaultValue="reports" className="space-y-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="reports" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
@@ -432,6 +437,17 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Modals */}
+      <ProductFormModal 
+        open={showProductForm} 
+        onOpenChange={setShowProductForm} 
+      />
+      
+      <CouponFormModal 
+        open={showCouponForm} 
+        onOpenChange={setShowCouponForm} 
+      />
 
       <Footer />
     </div>
