@@ -14,12 +14,13 @@ import {
   Settings,
   ShoppingCart,
   Users,
-  Home
+  Home,
+  Headphones
 } from 'lucide-react';
 
 const AdminTabs = () => {
   return (
-    <TabsList className="grid w-full grid-cols-13">
+    <TabsList className="grid w-full grid-cols-14">
       <TabsTrigger value="dashboard" className="flex items-center gap-2">
         <Home className="w-4 h-4" />
         Dashboard
@@ -71,6 +72,10 @@ const AdminTabs = () => {
       <TabsTrigger value="settings" className="flex items-center gap-2">
         <Settings className="w-4 h-4" />
         Config
+      </TabsTrigger>
+      <TabsTrigger value="support" className="flex items-center gap-2">
+        <Headphones className="w-4 h-4" />
+        Suporte
       </TabsTrigger>
     </TabsList>
   );

@@ -7,21 +7,19 @@ import AdvancedCouponSystem from '@/components/AdvancedCouponSystem';
 import PaymentIntegrations from '@/components/PaymentIntegrations';
 import ShippingIntegrations from '@/components/ShippingIntegrations';
 import MarketingIntegrations from '@/components/MarketingIntegrations';
-import AdvancedReports from '@/components/AdvancedReports';
 import CartRecovery from '@/components/CartRecovery';
 import ProductManagement from '@/components/ProductManagement';
 import AdminSettingsAdvanced from '@/components/AdminSettingsAdvanced';
 import ProductFormModal from '@/components/ProductFormModal';
 import CouponFormModal from '@/components/CouponFormModal';
-import AdminStats from '@/components/admin/AdminStats';
-import AdminQuickActions from '@/components/admin/AdminQuickActions';
-import AdminRecentActivity from '@/components/admin/AdminRecentActivity';
 import AdminLogin from '@/components/admin/AdminLogin';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminTabs from '@/components/admin/AdminTabs';
 import OrderManagement from '@/components/admin/OrderManagement';
 import CustomerManagement from '@/components/admin/CustomerManagement';
 import AdminDashboardHome from '@/components/admin/AdminDashboardHome';
+import AdminSupport from '@/components/admin/AdminSupport';
+import AdminReports from '@/components/admin/AdminReports';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 
@@ -51,10 +49,7 @@ const AdminDashboard = () => {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    toast({
-      title: "Seção Ativada",
-      description: `Acessando ${tab.charAt(0).toUpperCase() + tab.slice(1)}`,
-    });
+    console.log(`Navegando para aba: ${tab}`);
   };
 
   const handleNewProduct = () => {
@@ -165,27 +160,6 @@ Equipe OffSeason
       <div className="container mx-auto px-4 py-8">
         <AdminHeader onLogout={() => setIsAuthenticated(false)} onRefresh={() => handleTabChange('reports')} />
 
-        <AdminStats onAnalyticsClick={() => handleTabChange('reports')} />
-
-        <AdminQuickActions
-          onNewProduct={() => setShowProductForm(true)}
-          onNewCoupon={() => setShowCouponForm(true)}
-          onReports={() => handleTabChange('reports')}
-          onSupport={() => {
-            toast({
-              title: "Central de Suporte 24/7",
-              description: "Sistema de suporte profissional ativado!",
-            });
-          }}
-          onMarketing={() => handleTabChange('marketing')}
-          onCampaigns={() => handleTabChange('marketing')}
-          onIntegrations={() => handleTabChange('integration')}
-          onOrders={() => handleTabChange('orders')}
-          onSettings={() => handleTabChange('settings')}
-        />
-
-        <AdminRecentActivity />
-
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
           <AdminTabs />
           
@@ -194,7 +168,7 @@ Equipe OffSeason
           </TabsContent>
 
           <TabsContent value="reports">
-            <AdvancedReports />
+            <AdminReports />
           </TabsContent>
 
           <TabsContent value="products">
@@ -239,6 +213,10 @@ Equipe OffSeason
           
           <TabsContent value="settings">
             <AdminSettingsAdvanced />
+          </TabsContent>
+
+          <TabsContent value="support">
+            <AdminSupport />
           </TabsContent>
         </Tabs>
       </div>
