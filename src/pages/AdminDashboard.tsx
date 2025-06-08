@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
 import Footer from '@/components/Footer';
@@ -22,12 +21,13 @@ import AdminHeader from '@/components/admin/AdminHeader';
 import AdminTabs from '@/components/admin/AdminTabs';
 import OrderManagement from '@/components/admin/OrderManagement';
 import CustomerManagement from '@/components/admin/CustomerManagement';
+import AdminDashboardHome from '@/components/admin/AdminDashboardHome';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [activeTab, setActiveTab] = useState('reports');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [showProductForm, setShowProductForm] = useState(false);
   const [showCouponForm, setShowCouponForm] = useState(false);
 
@@ -47,6 +47,14 @@ const AdminDashboard = () => {
       });
       return false;
     }
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    toast({
+      title: "Seção Ativada",
+      description: `Acessando ${tab.charAt(0).toUpperCase() + tab.slice(1)}`,
+    });
   };
 
   const handleNewProduct = () => {
@@ -155,27 +163,36 @@ Equipe OffSeason
       <HeaderEnhanced />
       
       <div className="container mx-auto px-4 py-8">
-        <AdminHeader onLogout={() => setIsAuthenticated(false)} onRefresh={handleAnalytics} />
+        <AdminHeader onLogout={() => setIsAuthenticated(false)} onRefresh={() => handleTabChange('reports')} />
 
-        <AdminStats onAnalyticsClick={handleAnalytics} />
+        <AdminStats onAnalyticsClick={() => handleTabChange('reports')} />
 
         <AdminQuickActions
-          onNewProduct={handleNewProduct}
-          onNewCoupon={handleNewCoupon}
-          onReports={handleReports}
-          onSupport={handleSupport}
-          onMarketing={handleMarketing}
-          onCampaigns={handleCampaigns}
-          onIntegrations={handleIntegrations}
-          onOrders={handleOrders}
-          onSettings={handleSettings}
+          onNewProduct={() => setShowProductForm(true)}
+          onNewCoupon={() => setShowCouponForm(true)}
+          onReports={() => handleTabChange('reports')}
+          onSupport={() => {
+            toast({
+              title: "Central de Suporte 24/7",
+              description: "Sistema de suporte profissional ativado!",
+            });
+          }}
+          onMarketing={() => handleTabChange('marketing')}
+          onCampaigns={() => handleTabChange('marketing')}
+          onIntegrations={() => handleTabChange('integration')}
+          onOrders={() => handleTabChange('orders')}
+          onSettings={() => handleTabChange('settings')}
         />
 
         <AdminRecentActivity />
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
           <AdminTabs />
           
+          <TabsContent value="dashboard">
+            <AdminDashboardHome />
+          </TabsContent>
+
           <TabsContent value="reports">
             <AdvancedReports />
           </TabsContent>

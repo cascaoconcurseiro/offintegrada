@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -51,7 +52,8 @@ const EcommerceIntegration = () => {
     lojaintegrada: { connected: true, status: 'active', lastSync: '1 min atrás' },
     mercadolivre: { connected: true, status: 'active', lastSync: '3 min atrás' },
     americanas: { connected: false, status: 'inactive', lastSync: 'Nunca' },
-    amazon: { connected: false, status: 'inactive', lastSync: 'Nunca' }
+    amazon: { connected: false, status: 'inactive', lastSync: 'Nunca' },
+    shopee: { connected: false, status: 'inactive', lastSync: 'Nunca' }
   });
 
   const [automations, setAutomations] = useState({
@@ -110,6 +112,15 @@ const EcommerceIntegration = () => {
       color: 'bg-yellow-600',
       features: ['Marketplace', 'Vendas', 'Logística', 'Pagamentos'],
       marketShare: '45%'
+    },
+    {
+      id: 'shopee',
+      name: 'Shopee',
+      description: 'Marketplace asiático em crescimento no Brasil',
+      icon: ShoppingCart,
+      color: 'bg-orange-500',
+      features: ['Marketplace', 'Shopee Pay', 'Logística', 'Live Shopping'],
+      marketShare: '8%'
     },
     {
       id: 'magento',
@@ -186,7 +197,7 @@ const EcommerceIntegration = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={syncNow}>
+          <Button variant="outline" onClick={() => toast({ title: "Sincronização Iniciada", description: "Sincronizando dados..." })}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Sincronizar Agora
           </Button>
@@ -199,7 +210,12 @@ const EcommerceIntegration = () => {
 
       {/* Stats de Sincronização */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {syncStats.map((stat, index) => {
+        {[
+          { name: 'Produtos Sincronizados', value: '2.847', change: '+127 hoje', icon: Package },
+          { name: 'Pedidos Processados', value: '1.234', change: '+89 hoje', icon: ShoppingCart },
+          { name: 'Estoque Atualizado', value: '98.7%', change: 'Tempo real', icon: BarChart3 },
+          { name: 'Clientes Integrados', value: '15.629', change: '+234 hoje', icon: Users }
+        ].map((stat, index) => {
           const IconComponent = stat.icon;
           return (
             <Card key={index}>
@@ -279,7 +295,21 @@ const EcommerceIntegration = () => {
 
                       <div className="flex gap-2">
                         <Button 
-                          onClick={() => toggleIntegration(platform.id)}
+                          onClick={() => {
+                            setIntegrations(prev => ({
+                              ...prev,
+                              [platform.id]: {
+                                ...prev[platform.id],
+                                connected: !prev[platform.id].connected,
+                                status: !prev[platform.id].connected ? 'active' : 'inactive',
+                                lastSync: !prev[platform.id].connected ? 'Agora' : 'Nunca'
+                              }
+                            }));
+                            toast({
+                              title: integration.connected ? "Integração Desconectada" : "Integração Conectada",
+                              description: `${platform.name} ${integration.connected ? 'desconectado' : 'conectado'} com sucesso!`,
+                            });
+                          }}
                           className={`flex-1 ${isConnected ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
                         >
                           {isConnected ? 'Desconectar' : 'Conectar'}

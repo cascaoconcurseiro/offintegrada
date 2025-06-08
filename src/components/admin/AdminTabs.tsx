@@ -13,12 +13,17 @@ import {
   Gift, 
   Settings,
   ShoppingCart,
-  Users
+  Users,
+  Home
 } from 'lucide-react';
 
 const AdminTabs = () => {
   return (
-    <TabsList className="grid w-full grid-cols-12">
+    <TabsList className="grid w-full grid-cols-13">
+      <TabsTrigger value="dashboard" className="flex items-center gap-2">
+        <Home className="w-4 h-4" />
+        Dashboard
+      </TabsTrigger>
       <TabsTrigger value="reports" className="flex items-center gap-2">
         <BarChart3 className="w-4 h-4" />
         Relatórios
