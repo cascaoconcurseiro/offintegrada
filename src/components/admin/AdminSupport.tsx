@@ -5,19 +5,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import AdminSectionHeader from './AdminSectionHeader';
 import { 
-  Headphones, 
   MessageSquare, 
   Phone, 
   Mail, 
-  Clock, 
-  CheckCircle,
-  AlertTriangle,
   Send
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
-const AdminSupport = () => {
+interface AdminSupportProps {
+  onBackToDashboard: () => void;
+}
+
+const AdminSupport = ({ onBackToDashboard }: AdminSupportProps) => {
   const [ticketForm, setTicketForm] = useState({
     priority: 'medium',
     subject: '',
@@ -67,157 +68,153 @@ const AdminSupport = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-            Central de Suporte 24/7
-          </h2>
-          <p className="text-gray-600">
-            Suporte profissional para administradores
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={handleInstantSupport}>
-            <MessageSquare className="w-4 h-4 mr-2" />
-            Chat Ao Vivo
-          </Button>
-          <Button variant="outline">
-            <Phone className="w-4 h-4 mr-2" />
-            (11) 9999-9999
-          </Button>
-        </div>
-      </div>
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <AdminSectionHeader
+        title="Central de Suporte 24/7"
+        description="Suporte profissional para administradores"
+        onBackToDashboard={onBackToDashboard}
+      >
+        <Button onClick={handleInstantSupport}>
+          <MessageSquare className="w-4 h-4 mr-2" />
+          Chat Ao Vivo
+        </Button>
+        <Button variant="outline">
+          <Phone className="w-4 h-4 mr-2" />
+          (11) 9999-9999
+        </Button>
+      </AdminSectionHeader>
 
-      {/* Estatísticas de Suporte */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {supportStats.map((stat, index) => (
-          <Card key={index}>
-            <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold">{stat.value}</p>
-              <p className="text-sm text-gray-600">{stat.label}</p>
-              <Badge 
-                variant={stat.status === 'success' ? 'default' : stat.status === 'warning' ? 'destructive' : 'secondary'}
-                className="mt-2"
-              >
-                {stat.status === 'success' ? 'Excelente' : stat.status === 'warning' ? 'Atenção' : 'Normal'}
-              </Badge>
+      <div className="space-y-6">
+        {/* Estatísticas de Suporte */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {supportStats.map((stat, index) => (
+            <Card key={index}>
+              <CardContent className="p-4 text-center">
+                <p className="text-2xl font-bold">{stat.value}</p>
+                <p className="text-sm text-gray-600">{stat.label}</p>
+                <Badge 
+                  variant={stat.status === 'success' ? 'default' : stat.status === 'warning' ? 'destructive' : 'secondary'}
+                  className="mt-2"
+                >
+                  {stat.status === 'success' ? 'Excelente' : stat.status === 'warning' ? 'Atenção' : 'Normal'}
+                </Badge>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Novo Ticket */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-oswald flex items-center gap-2">
+                <Send className="w-5 h-5" />
+                Criar Novo Ticket
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Prioridade</label>
+                <select 
+                  className="w-full p-2 border rounded-md"
+                  value={ticketForm.priority}
+                  onChange={(e) => setTicketForm(prev => ({ ...prev, priority: e.target.value }))}
+                >
+                  <option value="low">Baixa</option>
+                  <option value="medium">Média</option>
+                  <option value="high">Alta</option>
+                  <option value="urgent">Urgente</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Assunto</label>
+                <Input
+                  value={ticketForm.subject}
+                  onChange={(e) => setTicketForm(prev => ({ ...prev, subject: e.target.value }))}
+                  placeholder="Descreva brevemente o problema"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Descrição Detalhada</label>
+                <Textarea
+                  value={ticketForm.description}
+                  onChange={(e) => setTicketForm(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Descreva o problema em detalhes..."
+                  rows={4}
+                />
+              </div>
+              
+              <Button onClick={handleSubmitTicket} className="w-full">
+                <Send className="w-4 h-4 mr-2" />
+                Criar Ticket
+              </Button>
             </CardContent>
           </Card>
-        ))}
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Novo Ticket */}
+          {/* Tickets Recentes */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-oswald">Tickets Recentes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {recentTickets.map((ticket, index) => (
+                  <div key={index} className="p-3 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">{ticket.id}</span>
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          variant={ticket.priority === 'high' ? 'destructive' : 'secondary'}
+                        >
+                          {ticket.priority === 'high' ? 'Alta' : 'Média'}
+                        </Badge>
+                        <Badge 
+                          variant={ticket.status === 'resolved' ? 'default' : 'secondary'}
+                        >
+                          {ticket.status === 'resolved' ? 'Resolvido' : 
+                           ticket.status === 'in_progress' ? 'Em Andamento' : 'Aberto'}
+                        </Badge>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600">{ticket.subject}</p>
+                    <p className="text-xs text-gray-500 mt-1">Há {ticket.time}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Contatos Diretos */}
         <Card>
           <CardHeader>
-            <CardTitle className="font-oswald flex items-center gap-2">
-              <Send className="w-5 h-5" />
-              Criar Novo Ticket
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Prioridade</label>
-              <select 
-                className="w-full p-2 border rounded-md"
-                value={ticketForm.priority}
-                onChange={(e) => setTicketForm(prev => ({ ...prev, priority: e.target.value }))}
-              >
-                <option value="low">Baixa</option>
-                <option value="medium">Média</option>
-                <option value="high">Alta</option>
-                <option value="urgent">Urgente</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2">Assunto</label>
-              <Input
-                value={ticketForm.subject}
-                onChange={(e) => setTicketForm(prev => ({ ...prev, subject: e.target.value }))}
-                placeholder="Descreva brevemente o problema"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2">Descrição Detalhada</label>
-              <Textarea
-                value={ticketForm.description}
-                onChange={(e) => setTicketForm(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Descreva o problema em detalhes..."
-                rows={4}
-              />
-            </div>
-            
-            <Button onClick={handleSubmitTicket} className="w-full">
-              <Send className="w-4 h-4 mr-2" />
-              Criar Ticket
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Tickets Recentes */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-oswald">Tickets Recentes</CardTitle>
+            <CardTitle className="font-oswald">Contatos Diretos de Emergência</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {recentTickets.map((ticket, index) => (
-                <div key={index} className="p-3 border rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">{ticket.id}</span>
-                    <div className="flex items-center gap-2">
-                      <Badge 
-                        variant={ticket.priority === 'high' ? 'destructive' : 'secondary'}
-                      >
-                        {ticket.priority === 'high' ? 'Alta' : 'Média'}
-                      </Badge>
-                      <Badge 
-                        variant={ticket.status === 'resolved' ? 'default' : 'secondary'}
-                      >
-                        {ticket.status === 'resolved' ? 'Resolvido' : 
-                         ticket.status === 'in_progress' ? 'Em Andamento' : 'Aberto'}
-                      </Badge>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600">{ticket.subject}</p>
-                  <p className="text-xs text-gray-500 mt-1">Há {ticket.time}</p>
-                </div>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                <Phone className="w-5 h-5" />
+                <span className="text-sm">Telefone 24h</span>
+                <span className="text-xs text-gray-500">(11) 9999-9999</span>
+              </Button>
+              
+              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                <Mail className="w-5 h-5" />
+                <span className="text-sm">Email Urgente</span>
+                <span className="text-xs text-gray-500">admin@offseason.com</span>
+              </Button>
+              
+              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                <MessageSquare className="w-5 h-5" />
+                <span className="text-sm">WhatsApp</span>
+                <span className="text-xs text-gray-500">Resposta imediata</span>
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Contatos Diretos */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-oswald">Contatos Diretos de Emergência</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="outline" className="h-16 flex flex-col gap-1">
-              <Phone className="w-5 h-5" />
-              <span className="text-sm">Telefone 24h</span>
-              <span className="text-xs text-gray-500">(11) 9999-9999</span>
-            </Button>
-            
-            <Button variant="outline" className="h-16 flex flex-col gap-1">
-              <Mail className="w-5 h-5" />
-              <span className="text-sm">Email Urgente</span>
-              <span className="text-xs text-gray-500">admin@offseason.com</span>
-            </Button>
-            
-            <Button variant="outline" className="h-16 flex flex-col gap-1">
-              <MessageSquare className="w-5 h-5" />
-              <span className="text-sm">WhatsApp</span>
-              <span className="text-xs text-gray-500">Resposta imediata</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };

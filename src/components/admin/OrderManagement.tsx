@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import AdminSectionHeader from './AdminSectionHeader';
 import { 
   ShoppingCart, 
   Search, 
@@ -13,16 +14,15 @@ import {
   Package, 
   DollarSign,
   Calendar,
-  User,
-  MapPin,
-  Phone,
-  Mail,
   Edit,
-  Download,
-  RefreshCw
+  Download
 } from 'lucide-react';
 
-const OrderManagement = () => {
+interface OrderManagementProps {
+  onBackToDashboard: () => void;
+}
+
+const OrderManagement = ({ onBackToDashboard }: OrderManagementProps) => {
   const [orders] = useState([
     {
       id: '#OSN-001234',
@@ -51,20 +51,6 @@ const OrderManagement = () => {
       address: 'Av. Paulista, 456 - São Paulo/SP',
       payment: 'PIX',
       tracking: 'BR987654321'
-    },
-    {
-      id: '#OSN-001236',
-      customer: 'Pedro Costa',
-      email: 'pedro@email.com',
-      phone: '(31) 77777-7777',
-      date: '2024-06-06',
-      status: 'delivered',
-      total: 159.90,
-      items: 1,
-      shipping: 'PAC',
-      address: 'Rua Central, 789 - Belo Horizonte/MG',
-      payment: 'Boleto',
-      tracking: 'BR456789123'
     }
   ]);
 
@@ -91,153 +77,145 @@ const OrderManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-            Gestão de Pedidos
-          </h2>
-          <p className="text-gray-600">
-            Sistema completo para gerenciar pedidos, envios e fulfillment
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Exportar
-          </Button>
-          <Button variant="outline">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Atualizar
-          </Button>
-        </div>
-      </div>
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <AdminSectionHeader
+        title="Gestão de Pedidos"
+        description="Sistema completo para gerenciar pedidos, envios e fulfillment"
+        onBackToDashboard={onBackToDashboard}
+      >
+        <Button variant="outline">
+          <Download className="w-4 h-4 mr-2" />
+          Exportar
+        </Button>
+      </AdminSectionHeader>
 
-      {/* Métricas de Pedidos */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {[
-          { name: 'Pedidos Hoje', value: '23', icon: ShoppingCart, color: 'text-blue-600' },
-          { name: 'Aguardando Envio', value: '12', icon: Package, color: 'text-yellow-600' },
-          { name: 'Em Trânsito', value: '45', icon: Truck, color: 'text-purple-600' },
-          { name: 'Faturamento', value: 'R$ 8.920', icon: DollarSign, color: 'text-green-600' }
-        ].map((metric, index) => {
-          const IconComponent = metric.icon;
-          return (
-            <Card key={index}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <IconComponent className={`w-5 h-5 ${metric.color}`} />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{metric.value}</p>
-                  <p className="text-xs text-gray-600">{metric.name}</p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <div className="space-y-6">
+        {/* Métricas de Pedidos */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[
+            { name: 'Pedidos Hoje', value: '23', icon: ShoppingCart, color: 'text-blue-600' },
+            { name: 'Aguardando Envio', value: '12', icon: Package, color: 'text-yellow-600' },
+            { name: 'Em Trânsito', value: '45', icon: Truck, color: 'text-purple-600' },
+            { name: 'Faturamento', value: 'R$ 8.920', icon: DollarSign, color: 'text-green-600' }
+          ].map((metric, index) => {
+            const IconComponent = metric.icon;
+            return (
+              <Card key={index}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <IconComponent className={`w-5 h-5 ${metric.color}`} />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{metric.value}</p>
+                    <p className="text-xs text-gray-600">{metric.name}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-      {/* Filtros */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-wrap gap-4 items-center">
-            <div className="flex-1 min-w-64">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input placeholder="Buscar pedidos..." className="pl-10" />
+        {/* Filtros */}
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex-1 min-w-64">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input placeholder="Buscar pedidos..." className="pl-10" />
+                </div>
               </div>
+              <select className="px-3 py-2 border rounded">
+                <option value="">Todos Status</option>
+                <option value="pending">Pendente</option>
+                <option value="processing">Processando</option>
+                <option value="shipped">Enviado</option>
+                <option value="delivered">Entregue</option>
+              </select>
+              <Input type="date" className="w-auto" />
+              <Button variant="outline" size="sm">
+                <Filter className="w-4 h-4 mr-2" />
+                Filtros
+              </Button>
             </div>
-            <select className="px-3 py-2 border rounded">
-              <option value="">Todos Status</option>
-              <option value="pending">Pendente</option>
-              <option value="processing">Processando</option>
-              <option value="shipped">Enviado</option>
-              <option value="delivered">Entregue</option>
-            </select>
-            <Input type="date" className="w-auto" />
-            <Button variant="outline" size="sm">
-              <Filter className="w-4 h-4 mr-2" />
-              Filtros
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Lista de Pedidos */}
-      <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b bg-gray-50">
-                <tr>
-                  <th className="text-left p-4">Pedido</th>
-                  <th className="text-left p-4">Cliente</th>
-                  <th className="text-left p-4">Data</th>
-                  <th className="text-left p-4">Status</th>
-                  <th className="text-left p-4">Total</th>
-                  <th className="text-left p-4">Envio</th>
-                  <th className="text-left p-4">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id} className="border-b hover:bg-gray-50">
-                    <td className="p-4">
-                      <div>
-                        <h4 className="font-medium">{order.id}</h4>
-                        <p className="text-sm text-gray-600">{order.items} itens</p>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div>
-                        <h4 className="font-medium">{order.customer}</h4>
-                        <p className="text-sm text-gray-600">{order.email}</p>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm">{order.date}</span>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <Badge className={getStatusColor(order.status)}>
-                        {getStatusText(order.status)}
-                      </Badge>
-                    </td>
-                    <td className="p-4">
-                      <p className="font-bold text-green-600">R$ {order.total.toFixed(2)}</p>
-                      <p className="text-xs text-gray-600">{order.payment}</p>
-                    </td>
-                    <td className="p-4">
-                      <div>
-                        <p className="text-sm font-medium">{order.shipping}</p>
-                        {order.tracking && (
-                          <p className="text-xs text-gray-600">{order.tracking}</p>
-                        )}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex gap-1">
-                        <Button size="sm" variant="outline">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <Truck className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </td>
+        {/* Lista de Pedidos */}
+        <Card>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b bg-gray-50">
+                  <tr>
+                    <th className="text-left p-4">Pedido</th>
+                    <th className="text-left p-4">Cliente</th>
+                    <th className="text-left p-4">Data</th>
+                    <th className="text-left p-4">Status</th>
+                    <th className="text-left p-4">Total</th>
+                    <th className="text-left p-4">Envio</th>
+                    <th className="text-left p-4">Ações</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+                </thead>
+                <tbody>
+                  {orders.map((order) => (
+                    <tr key={order.id} className="border-b hover:bg-gray-50">
+                      <td className="p-4">
+                        <div>
+                          <h4 className="font-medium">{order.id}</h4>
+                          <p className="text-sm text-gray-600">{order.items} itens</p>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div>
+                          <h4 className="font-medium">{order.customer}</h4>
+                          <p className="text-sm text-gray-600">{order.email}</p>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm">{order.date}</span>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <Badge className={getStatusColor(order.status)}>
+                          {getStatusText(order.status)}
+                        </Badge>
+                      </td>
+                      <td className="p-4">
+                        <p className="font-bold text-green-600">R$ {order.total.toFixed(2)}</p>
+                        <p className="text-xs text-gray-600">{order.payment}</p>
+                      </td>
+                      <td className="p-4">
+                        <div>
+                          <p className="text-sm font-medium">{order.shipping}</p>
+                          {order.tracking && (
+                            <p className="text-xs text-gray-600">{order.tracking}</p>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex gap-1">
+                          <Button size="sm" variant="outline">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Truck className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

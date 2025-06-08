@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
 import Footer from '@/components/Footer';
@@ -52,101 +53,8 @@ const AdminDashboard = () => {
     console.log(`Navegando para aba: ${tab}`);
   };
 
-  const handleNewProduct = () => {
-    setShowProductForm(true);
-    toast({
-      title: "Formulário de Produto",
-      description: "Abrindo formulário completo de produto!",
-    });
-  };
-
-  const handleNewCoupon = () => {
-    setShowCouponForm(true);
-    toast({
-      title: "Sistema de Cupons",
-      description: "Abrindo sistema avançado de cupons!",
-    });
-  };
-
-  const handleReports = () => {
-    setActiveTab('reports');
-    toast({
-      title: "Relatórios Avançados",
-      description: "Acessando central de relatórios e analytics profissional!",
-    });
-  };
-
-  const handleSupport = () => {
-    toast({
-      title: "Central de Suporte 24/7",
-      description: "Sistema de suporte profissional ativado!",
-    });
-    const supportEmail = 'suporte@offseason.com.br';
-    const subject = encodeURIComponent('Suporte Administrativo - Urgente');
-    const body = encodeURIComponent(`
-Olá equipe de suporte!
-
-Preciso de assistência com o painel administrativo.
-
-Detalhes:
-- Data/Hora: ${new Date().toLocaleString('pt-BR')}
-- Usuário: Administrador
-- Seção: Dashboard Administrativo
-- Prioridade: Alta
-
-Atenciosamente,
-Equipe OffSeason
-    `);
-    
-    window.open(`mailto:${supportEmail}?subject=${subject}&body=${body}`, '_blank');
-  };
-
-  const handleMarketing = () => {
-    setActiveTab('marketing');
-    toast({
-      title: "Marketing Intelligence Center",
-      description: "Acessando central de marketing multi-plataforma!",
-    });
-  };
-
-  const handleCampaigns = () => {
-    setActiveTab('marketing');
-    toast({
-      title: "Gerenciador de Campanhas 360°",
-      description: "Sistema completo de campanhas ativado!",
-    });
-  };
-
-  const handleSettings = () => {
-    setActiveTab('settings');
-    toast({
-      title: "Configurações Avançadas",
-      description: "Acessando centro de controle completo!",
-    });
-  };
-
-  const handleIntegrations = () => {
-    setActiveTab('integration');
-    toast({
-      title: "Hub de Integrações",
-      description: "Central de integrações ativada!",
-    });
-  };
-
-  const handleAnalytics = () => {
-    setActiveTab('reports');
-    toast({
-      title: "Analytics Avançado",
-      description: "Dashboard completo com métricas em tempo real!",
-    });
-  };
-
-  const handleOrders = () => {
-    setActiveTab('orders');
-    toast({
-      title: "Gestão de Pedidos",
-      description: "Sistema completo de gestão de pedidos!",
-    });
+  const handleBackToDashboard = () => {
+    setActiveTab('dashboard');
   };
 
   if (!isAuthenticated) {
@@ -168,7 +76,7 @@ Equipe OffSeason
           </TabsContent>
 
           <TabsContent value="reports">
-            <AdminReports />
+            <AdminReports onBackToDashboard={handleBackToDashboard} />
           </TabsContent>
 
           <TabsContent value="products">
@@ -176,11 +84,11 @@ Equipe OffSeason
           </TabsContent>
 
           <TabsContent value="orders">
-            <OrderManagement />
+            <OrderManagement onBackToDashboard={handleBackToDashboard} />
           </TabsContent>
 
           <TabsContent value="customers">
-            <CustomerManagement />
+            <CustomerManagement onBackToDashboard={handleBackToDashboard} />
           </TabsContent>
 
           <TabsContent value="payments">
@@ -216,7 +124,7 @@ Equipe OffSeason
           </TabsContent>
 
           <TabsContent value="support">
-            <AdminSupport />
+            <AdminSupport onBackToDashboard={handleBackToDashboard} />
           </TabsContent>
         </Tabs>
       </div>
