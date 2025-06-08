@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -306,12 +305,13 @@ const MarketingIntegrations = () => {
                               </div>
                             </div>
                             <Badge className={isConnected ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                              {isConnected ? <CheckCircle className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
+                              {isConnected ? <CheckCircle className="w-3 h-3 mr-1" /> : <AlertTriangle className="w-3 h-3 mr-1" />}
                               {isConnected ? 'Conectado' : 'Desconectado'}
                             </Badge>
                           </div>
                         </CardHeader>
                         <CardContent>
+                          
                           <div className="space-y-4">
                             <div>
                               <p className="text-sm text-gray-600 mb-2">Recursos:</p>
@@ -415,7 +415,7 @@ const MarketingIntegrations = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="font-oswald flex items-center gap-2">
-                  <PieChart className="w-5 h-5" />
+                  <Target className="w-5 h-5" />
                   ROAS por Plataforma
                 </CardTitle>
               </CardHeader>

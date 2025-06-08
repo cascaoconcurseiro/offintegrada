@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
 import Footer from '@/components/Footer';
@@ -105,7 +104,7 @@ const AdminDashboard = () => {
       title: 'Carrinho Abandonado',
       value: '58%',
       change: '-12%',
-      icon: <AlertCircle className="w-5 h-5" />,
+      icon: <AlertTriangle className="w-5 h-5" />,
       color: 'text-red-600'
     },
     {
