@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,17 +11,21 @@ import {
   CreditCard,
   Truck,
   Target,
-  TrendingDown,
   Activity,
-  Eye,
-  RefreshCw
+  RefreshCw,
+  Plus,
+  Gift
 } from 'lucide-react';
 
 interface AdminDashboardHomeProps {
   onNavigateToTab?: (tab: string) => void;
+  onNewProduct?: () => void;
+  onNewCoupon?: () => void;
 }
 
-const AdminDashboardHome = ({ onNavigateToTab }: AdminDashboardHomeProps) => {
+const AdminDashboardHome = ({ onNavigateToTab, onNewProduct, onNewCoupon }: AdminDashboardHomeProps) => {
+  
+
   const dashboardStats = [
     { name: 'Vendas Hoje', value: 'R$ 12.847', change: '+12.5%', icon: DollarSign, color: 'text-green-600' },
     { name: 'Pedidos', value: '245', change: '+8.2%', icon: ShoppingCart, color: 'text-blue-600' },
@@ -87,6 +90,49 @@ const AdminDashboardHome = ({ onNavigateToTab }: AdminDashboardHomeProps) => {
         </div>
       </div>
 
+      {/* Ações Rápidas de Criação */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-oswald">Ações Rápidas</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Button 
+              variant="outline" 
+              className="h-16 flex flex-col gap-2"
+              onClick={onNewProduct}
+            >
+              <Plus className="w-5 h-5" />
+              <span className="text-sm">Novo Produto</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-16 flex flex-col gap-2"
+              onClick={onNewCoupon}
+            >
+              <Gift className="w-5 h-5" />
+              <span className="text-sm">Novo Cupom</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-16 flex flex-col gap-2"
+              onClick={() => handleQuickAction('orders')}
+            >
+              <ShoppingCart className="w-5 h-5" />
+              <span className="text-sm">Ver Pedidos</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-16 flex flex-col gap-2"
+              onClick={() => handleQuickAction('reports')}
+            >
+              <BarChart3 className="w-5 h-5" />
+              <span className="text-sm">Relatórios</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Métricas Principais */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {dashboardStats.map((stat, index) => {
@@ -113,7 +159,7 @@ const AdminDashboardHome = ({ onNavigateToTab }: AdminDashboardHomeProps) => {
         })}
       </div>
 
-      {/* Ações Rápidas Dashboard */}
+      {/* Acesso Rápido - Seções Principais */}
       <Card>
         <CardHeader>
           <CardTitle className="font-oswald">Acesso Rápido - Seções Principais</CardTitle>
