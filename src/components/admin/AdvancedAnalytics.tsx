@@ -106,7 +106,6 @@ const AdvancedAnalytics = () => {
 
   const refreshData = async () => {
     setIsLoading(true);
-    // Simular carregamento de dados
     setTimeout(() => {
       setIsLoading(false);
       toast({
@@ -269,7 +268,7 @@ const AdvancedAnalytics = () => {
                   <h4 className="font-semibold">Segmentação por Valor</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span>VIP (>R$ 1000)</span>
+                      <span>VIP (mais de R$ 1000)</span>
                       <span className="font-bold">23%</span>
                     </div>
                     <div className="flex justify-between">
@@ -281,7 +280,7 @@ const AdvancedAnalytics = () => {
                       <span className="font-bold">32%</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Básico (<R$ 100)</span>
+                      <span>Básico (menos de R$ 100)</span>
                       <span className="font-bold">10%</span>
                     </div>
                   </div>
