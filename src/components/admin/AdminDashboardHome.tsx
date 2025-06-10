@@ -18,7 +18,11 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-const AdminDashboardHome = () => {
+interface AdminDashboardHomeProps {
+  onNavigateToTab?: (tab: string) => void;
+}
+
+const AdminDashboardHome = ({ onNavigateToTab }: AdminDashboardHomeProps) => {
   const dashboardStats = [
     { name: 'Vendas Hoje', value: 'R$ 12.847', change: '+12.5%', icon: DollarSign, color: 'text-green-600' },
     { name: 'Pedidos', value: '245', change: '+8.2%', icon: ShoppingCart, color: 'text-blue-600' },
@@ -31,12 +35,12 @@ const AdminDashboardHome = () => {
   ];
 
   const quickActions = [
-    { name: 'Vendas', description: 'Relatório de vendas em tempo real', icon: BarChart3 },
-    { name: 'Clientes', description: 'Gestão completa de clientes', icon: Users },
-    { name: 'Produtos', description: 'Catálogo e estoque', icon: Package },
-    { name: 'Marketing', description: 'Campanhas e automação', icon: Target },
-    { name: 'Operações', description: 'Pedidos e fulfillment', icon: Activity },
-    { name: 'Financeiro', description: 'Pagamentos e relatórios', icon: DollarSign }
+    { name: 'Vendas', description: 'Relatório de vendas em tempo real', icon: BarChart3, tab: 'reports' },
+    { name: 'Clientes', description: 'Gestão completa de clientes', icon: Users, tab: 'customers' },
+    { name: 'Produtos', description: 'Catálogo e estoque', icon: Package, tab: 'products' },
+    { name: 'Marketing', description: 'Campanhas e automação', icon: Target, tab: 'marketing' },
+    { name: 'Operações', description: 'Pedidos e fulfillment', icon: Activity, tab: 'orders' },
+    { name: 'Financeiro', description: 'Pagamentos e relatórios', icon: DollarSign, tab: 'payments' }
   ];
 
   const recentActivities = [
@@ -54,6 +58,12 @@ const AdminDashboardHome = () => {
     { metric: 'Conversão Média', prediction: '3.8%', confidence: '91%' }
   ];
 
+  const handleQuickAction = (tab: string) => {
+    if (onNavigateToTab) {
+      onNavigateToTab(tab);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -66,11 +76,11 @@ const AdminDashboardHome = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => handleQuickAction('reports')}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Atualizar Dashboard
           </Button>
-          <Button>
+          <Button onClick={() => handleQuickAction('reports')}>
             <BarChart3 className="w-4 h-4 mr-2" />
             Analytics Avançado
           </Button>
@@ -117,7 +127,7 @@ const AdminDashboardHome = () => {
                   key={index} 
                   variant="outline" 
                   className="h-20 flex flex-col gap-2"
-                  onClick={() => console.log(`Navegando para ${action.name}`)}
+                  onClick={() => handleQuickAction(action.tab)}
                 >
                   <IconComponent className="w-6 h-6" />
                   <div className="text-center">
