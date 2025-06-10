@@ -67,6 +67,13 @@ const CustomReports = () => {
   ]);
 
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newReport, setNewReport] = useState({
+    name: '',
+    description: '',
+    type: 'sales' as const,
+    schedule: 'manual' as const,
+    format: 'pdf' as const
+  });
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -95,17 +102,61 @@ const CustomReports = () => {
   };
 
   const handleGenerateReport = (reportId: string) => {
-    toast({
-      title: "Gerando Relatório",
-      description: "Relatório será gerado e enviado por email",
-    });
+    // Simular geração do relatório
+    const report = reports.find(r => r.id === reportId);
+    if (report) {
+      setReports(prev => prev.map(r => 
+        r.id === reportId 
+          ? { ...r, lastGenerated: new Date() }
+          : r
+      ));
+      
+      toast({
+        title: "Relatório Gerado",
+        description: `${report.name} foi gerado com sucesso`,
+      });
+
+      // Simular download
+      setTimeout(() => {
+        const element = document.createElement('a');
+        const file = new Blob(['Dados do relatório...'], { type: 'text/plain' });
+        element.href = URL.createObjectURL(file);
+        element.download = `${report.name}.${report.format}`;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+      }, 1000);
+    }
   };
 
   const handleCreateReport = () => {
-    setShowCreateForm(true);
+    if (!newReport.name || !newReport.description) {
+      toast({
+        title: "Erro",
+        description: "Preencha todos os campos obrigatórios",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const report: CustomReport = {
+      id: Date.now().toString(),
+      name: newReport.name,
+      description: newReport.description,
+      type: newReport.type,
+      schedule: newReport.schedule,
+      format: newReport.format,
+      lastGenerated: new Date(),
+      status: 'active'
+    };
+
+    setReports(prev => [...prev, report]);
+    setNewReport({ name: '', description: '', type: 'sales', schedule: 'manual', format: 'pdf' });
+    setShowCreateForm(false);
+    
     toast({
-      title: "Novo Relatório",
-      description: "Formulário de criação em desenvolvimento",
+      title: "Relatório Criado",
+      description: "Novo relatório personalizado foi criado",
     });
   };
 
@@ -121,6 +172,25 @@ const CustomReports = () => {
     });
   };
 
+  const deleteReport = (reportId: string) => {
+    setReports(prev => prev.filter(r => r.id !== reportId));
+    toast({
+      title: "Relatório Excluído",
+      description: "Relatório foi removido com sucesso",
+    });
+  };
+
+  const useTemplate = (templateName: string, templateType: string) => {
+    setNewReport({
+      name: templateName,
+      description: `Relatório baseado no template ${templateName}`,
+      type: templateType as any,
+      schedule: 'manual',
+      format: 'pdf'
+    });
+    setShowCreateForm(true);
+  };
+
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('pt-BR');
   };
@@ -132,7 +202,7 @@ const CustomReports = () => {
           <h3 className="text-xl font-semibold">Relatórios Personalizados</h3>
           <p className="text-gray-600">Crie e gerencie relatórios automatizados</p>
         </div>
-        <Button onClick={handleCreateReport}>
+        <Button onClick={() => setShowCreateForm(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Novo Relatório
         </Button>
@@ -173,6 +243,79 @@ const CustomReports = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Formulário de Criação */}
+      {showCreateForm && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Criar Novo Relatório</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Nome do Relatório</label>
+                <Input
+                  value={newReport.name}
+                  onChange={(e) => setNewReport(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Ex: Vendas por Categoria"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Tipo</label>
+                <select 
+                  className="w-full border rounded px-3 py-2"
+                  value={newReport.type}
+                  onChange={(e) => setNewReport(prev => ({ ...prev, type: e.target.value as any }))}
+                >
+                  <option value="sales">Vendas</option>
+                  <option value="customers">Clientes</option>
+                  <option value="products">Produtos</option>
+                  <option value="marketing">Marketing</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Descrição</label>
+              <Input
+                value={newReport.description}
+                onChange={(e) => setNewReport(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Descrição do relatório"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Frequência</label>
+                <select 
+                  className="w-full border rounded px-3 py-2"
+                  value={newReport.schedule}
+                  onChange={(e) => setNewReport(prev => ({ ...prev, schedule: e.target.value as any }))}
+                >
+                  <option value="manual">Manual</option>
+                  <option value="daily">Diário</option>
+                  <option value="weekly">Semanal</option>
+                  <option value="monthly">Mensal</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Formato</label>
+                <select 
+                  className="w-full border rounded px-3 py-2"
+                  value={newReport.format}
+                  onChange={(e) => setNewReport(prev => ({ ...prev, format: e.target.value as any }))}
+                >
+                  <option value="pdf">PDF</option>
+                  <option value="excel">Excel</option>
+                  <option value="csv">CSV</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleCreateReport}>Criar Relatório</Button>
+              <Button variant="outline" onClick={() => setShowCreateForm(false)}>Cancelar</Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Lista de Relatórios */}
       <Card>
@@ -227,7 +370,7 @@ const CustomReports = () => {
                     onClick={() => toggleReportStatus(report.id)}
                   >
                     {report.status === 'active' ? (
-                      <Trash2 className="w-4 h-4" />
+                      <Settings className="w-4 h-4" />
                     ) : (
                       <Play className="w-4 h-4" />
                     )}
@@ -235,8 +378,12 @@ const CustomReports = () => {
                   <Button size="sm" variant="ghost">
                     <Edit className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" variant="ghost">
-                    <Settings className="w-4 h-4" />
+                  <Button 
+                    size="sm" 
+                    variant="ghost"
+                    onClick={() => deleteReport(report.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
@@ -290,7 +437,12 @@ const CustomReports = () => {
                   <div className="flex-1">
                     <p className="font-medium">{template.name}</p>
                     <p className="text-sm text-gray-600 mt-1">{template.description}</p>
-                    <Button size="sm" variant="outline" className="mt-3" onClick={handleCreateReport}>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="mt-3" 
+                      onClick={() => useTemplate(template.name, template.type)}
+                    >
                       Usar Template
                     </Button>
                   </div>

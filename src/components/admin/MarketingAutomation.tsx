@@ -18,7 +18,8 @@ import {
   Plus,
   Settings,
   TrendingUp,
-  Calendar
+  Calendar,
+  Bell
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -72,6 +73,12 @@ const MarketingAutomation = () => {
   ]);
 
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newAutomation, setNewAutomation] = useState({
+    name: '',
+    type: 'email' as const,
+    trigger: '',
+    template: ''
+  });
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -104,10 +111,42 @@ const MarketingAutomation = () => {
   };
 
   const handleCreateAutomation = () => {
-    setShowCreateForm(true);
+    if (!newAutomation.name || !newAutomation.trigger) {
+      toast({
+        title: "Erro",
+        description: "Preencha todos os campos obrigatórios",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const automation: Automation = {
+      id: Date.now().toString(),
+      name: newAutomation.name,
+      type: newAutomation.type,
+      trigger: newAutomation.trigger,
+      status: 'draft',
+      sent: 0,
+      opened: 0,
+      clicked: 0,
+      lastRun: new Date()
+    };
+
+    setAutomations(prev => [...prev, automation]);
+    setNewAutomation({ name: '', type: 'email', trigger: '', template: '' });
+    setShowCreateForm(false);
+    
     toast({
-      title: "Nova Automação",
-      description: "Formulário de criação em desenvolvimento",
+      title: "Automação Criada",
+      description: "Nova automação foi criada com sucesso",
+    });
+  };
+
+  const deleteAutomation = (id: string) => {
+    setAutomations(prev => prev.filter(auto => auto.id !== id));
+    toast({
+      title: "Automação Excluída",
+      description: "Automação foi removida com sucesso",
     });
   };
 
@@ -129,7 +168,7 @@ const MarketingAutomation = () => {
           <h3 className="text-xl font-semibold">Automação de Marketing</h3>
           <p className="text-gray-600">Campanhas automatizadas e triggers</p>
         </div>
-        <Button onClick={handleCreateAutomation}>
+        <Button onClick={() => setShowCreateForm(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Nova Automação
         </Button>
@@ -172,6 +211,52 @@ const MarketingAutomation = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Formulário de Criação */}
+      {showCreateForm && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Criar Nova Automação</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Nome da Automação</label>
+                <Input
+                  value={newAutomation.name}
+                  onChange={(e) => setNewAutomation(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Ex: Boas-vindas novos clientes"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Tipo</label>
+                <select 
+                  className="w-full border rounded px-3 py-2"
+                  value={newAutomation.type}
+                  onChange={(e) => setNewAutomation(prev => ({ ...prev, type: e.target.value as any }))}
+                >
+                  <option value="email">Email</option>
+                  <option value="sms">SMS</option>
+                  <option value="push">Push Notification</option>
+                  <option value="webhook">Webhook</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Trigger</label>
+              <Input
+                value={newAutomation.trigger}
+                onChange={(e) => setNewAutomation(prev => ({ ...prev, trigger: e.target.value }))}
+                placeholder="Ex: Cliente se cadastra"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleCreateAutomation}>Criar Automação</Button>
+              <Button variant="outline" onClick={() => setShowCreateForm(false)}>Cancelar</Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="automations" className="space-y-4">
         <TabsList>
@@ -238,7 +323,11 @@ const MarketingAutomation = () => {
                       <Button size="sm" variant="ghost">
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="ghost">
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => deleteAutomation(automation.id)}
+                      >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>

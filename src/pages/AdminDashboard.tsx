@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
 import Footer from '@/components/Footer';
@@ -13,7 +14,6 @@ import AdminSettingsAdvanced from '@/components/AdminSettingsAdvanced';
 import ProductFormModal from '@/components/ProductFormModal';
 import CouponFormModal from '@/components/CouponFormModal';
 import AdminLogin from '@/components/admin/AdminLogin';
-import AdminHeader from '@/components/admin/AdminHeader';
 import AdminNavigationTabs from '@/components/admin/AdminNavigationTabs';
 import OrderManagement from '@/components/admin/OrderManagement';
 import CustomerManagement from '@/components/admin/CustomerManagement';
@@ -27,7 +27,8 @@ import AdvancedAnalytics from '@/components/admin/AdvancedAnalytics';
 import AuditLogSystem from '@/components/admin/AuditLogSystem';
 import DataBackupSystem from '@/components/admin/DataBackupSystem';
 import UserPermissionSystem from '@/components/admin/UserPermissionSystem';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
+import MarketingAutomation from '@/components/admin/MarketingAutomation';
+import CustomReports from '@/components/admin/CustomReports';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 
@@ -61,10 +62,6 @@ const AdminDashboard = () => {
     console.log(`Navegando para aba: ${tab}`);
   };
 
-  const handleBackToDashboard = () => {
-    setActiveTab('dashboard');
-  };
-
   const handleNewProduct = () => {
     setShowProductForm(true);
   };
@@ -80,6 +77,96 @@ const AdminDashboard = () => {
   if (!isAuthenticated) {
     return <AdminLogin onLogin={handleLogin} />;
   }
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return (
+          <AdminDashboardHome 
+            onNavigateToTab={handleTabChange}
+            onNewProduct={handleNewProduct}
+            onNewCoupon={handleNewCoupon}
+          />
+        );
+      
+      case 'audit':
+        return <AdminAuditReport />;
+      
+      case 'analytics':
+        return <AdvancedAnalytics />;
+      
+      case 'notifications':
+        return <NotificationSystem />;
+      
+      case 'logs':
+        return <AuditLogSystem />;
+      
+      case 'backup':
+        return <DataBackupSystem />;
+      
+      case 'permissions':
+        return <UserPermissionSystem />;
+      
+      case 'reports':
+        return <AdminReports onBackToDashboard={() => setActiveTab('dashboard')} />;
+      
+      case 'products':
+        return <ProductManagement />;
+      
+      case 'orders':
+        return <OrderManagement onBackToDashboard={() => setActiveTab('dashboard')} />;
+      
+      case 'customers':
+        return <CustomerManagement onBackToDashboard={() => setActiveTab('dashboard')} />;
+      
+      case 'payments':
+        return <PaymentIntegrations />;
+      
+      case 'shipping':
+        return <ShippingIntegrations />;
+      
+      case 'marketing':
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Integrações de Marketing</h3>
+                <MarketingIntegrations />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Automação de Marketing</h3>
+                <MarketingAutomation />
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Relatórios Personalizados</h3>
+              <CustomReports />
+            </div>
+          </div>
+        );
+      
+      case 'recovery':
+        return <CartRecovery />;
+      
+      case 'conversion':
+        return <ConversionOptimization />;
+      
+      case 'integration':
+        return <EcommerceIntegration />;
+      
+      case 'coupons':
+        return <AdvancedCouponSystem />;
+      
+      case 'settings':
+        return <AdminSettingsAdvanced />;
+      
+      case 'support':
+        return <AdminSupport onBackToDashboard={() => setActiveTab('dashboard')} />;
+      
+      default:
+        return <AdminDashboardHome onNavigateToTab={handleTabChange} />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -102,309 +189,18 @@ const AdminDashboard = () => {
           </div>
         </div>
 
+        {/* Navegação responsiva */}
         <div className="mb-6">
           <AdminNavigationTabs activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
 
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
-          <div className="mt-6">
-            <TabsContent value="dashboard" className="space-y-0">
-              <AdminDashboardHome 
-                onNavigateToTab={handleTabChange}
-                onNewProduct={handleNewProduct}
-                onNewCoupon={handleNewCoupon}
-              />
-            </TabsContent>
-
-            <TabsContent value="audit" className="space-y-0">
-              <AdminAuditReport />
-            </TabsContent>
-
-            <TabsContent value="analytics" className="space-y-0">
-              <AdvancedAnalytics />
-            </TabsContent>
-
-            <TabsContent value="notifications" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Central de Notificações
-                    </h2>
-                    <p className="text-gray-600">
-                      Sistema de notificações em tempo real
-                    </p>
-                  </div>
-                  <Button variant="outline" onClick={handleBackToDashboard}>
-                    Voltar ao Dashboard
-                  </Button>
-                </div>
-                <NotificationSystem />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="logs" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Sistema de Logs
-                    </h2>
-                    <p className="text-gray-600">
-                      Auditoria e logs do sistema
-                    </p>
-                  </div>
-                  <Button variant="outline" onClick={handleBackToDashboard}>
-                    Voltar ao Dashboard
-                  </Button>
-                </div>
-                <AuditLogSystem />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="backup" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Sistema de Backup
-                    </h2>
-                    <p className="text-gray-600">
-                      Backup automático e exportação de dados
-                    </p>
-                  </div>
-                  <Button variant="outline" onClick={handleBackToDashboard}>
-                    Voltar ao Dashboard
-                  </Button>
-                </div>
-                <DataBackupSystem />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="permissions" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Sistema de Permissões
-                    </h2>
-                    <p className="text-gray-600">
-                      Gerenciamento de usuários e permissões
-                    </p>
-                  </div>
-                  <Button variant="outline" onClick={handleBackToDashboard}>
-                    Voltar ao Dashboard
-                  </Button>
-                </div>
-                <UserPermissionSystem />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="reports" className="space-y-0">
-              <AdminReports onBackToDashboard={handleBackToDashboard} />
-            </TabsContent>
-
-            <TabsContent value="products" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Gestão de Produtos
-                    </h2>
-                    <p className="text-gray-600">
-                      Catálogo completo e controle de estoque
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={handleBackToDashboard}>
-                      Voltar ao Dashboard
-                    </Button>
-                    <Button onClick={handleNewProduct}>
-                      Novo Produto
-                    </Button>
-                  </div>
-                </div>
-                <ProductManagement />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="orders" className="space-y-0">
-              <OrderManagement onBackToDashboard={handleBackToDashboard} />
-            </TabsContent>
-
-            <TabsContent value="customers" className="space-y-0">
-              <CustomerManagement onBackToDashboard={handleBackToDashboard} />
-            </TabsContent>
-
-            <TabsContent value="payments" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Integrações de Pagamento
-                    </h2>
-                    <p className="text-gray-600">
-                      Configure métodos de pagamento e gateways
-                    </p>
-                  </div>
-                  <Button variant="outline" onClick={handleBackToDashboard}>
-                    Voltar ao Dashboard
-                  </Button>
-                </div>
-                <PaymentIntegrations />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="shipping" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Integrações de Envio
-                    </h2>
-                    <p className="text-gray-600">
-                      Configure transportadoras e métodos de envio
-                    </p>
-                  </div>
-                  <Button variant="outline" onClick={handleBackToDashboard}>
-                    Voltar ao Dashboard
-                  </Button>
-                </div>
-                <ShippingIntegrations />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="marketing" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Marketing 360°
-                    </h2>
-                    <p className="text-gray-600">
-                      Automação, campanhas e integrações de marketing
-                    </p>
-                  </div>
-                  <Button variant="outline" onClick={handleBackToDashboard}>
-                    Voltar ao Dashboard
-                  </Button>
-                </div>
-                <MarketingIntegrations />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="recovery" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Recuperação de Carrinho
-                    </h2>
-                    <p className="text-gray-600">
-                      Sistema inteligente de recuperação multi-canal
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={handleBackToDashboard}>
-                      Voltar ao Dashboard
-                    </Button>
-                    <Button onClick={handleNewCampaign}>
-                      Nova Campanha
-                    </Button>
-                  </div>
-                </div>
-                <CartRecovery />
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="conversion" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Otimização de Conversão
-                    </h2>
-                    <p className="text-gray-600">
-                      Ferramentas avançadas para aumentar conversões
-                    </p>
-                  </div>
-                  <Button variant="outline" onClick={handleBackToDashboard}>
-                    Voltar ao Dashboard
-                  </Button>
-                </div>
-                <ConversionOptimization />
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="integration" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Integrações E-commerce
-                    </h2>
-                    <p className="text-gray-600">
-                      Conecte com marketplaces e plataformas
-                    </p>
-                  </div>
-                  <Button variant="outline" onClick={handleBackToDashboard}>
-                    Voltar ao Dashboard
-                  </Button>
-                </div>
-                <EcommerceIntegration />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="coupons" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Sistema de Cupons Avançado
-                    </h2>
-                    <p className="text-gray-600">
-                      Crie e gerencie cupons inteligentes
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={handleBackToDashboard}>
-                      Voltar ao Dashboard
-                    </Button>
-                    <Button onClick={handleNewCoupon}>
-                      Novo Cupom
-                    </Button>
-                  </div>
-                </div>
-                <AdvancedCouponSystem />
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="settings" className="space-y-0">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
-                      Configurações Avançadas
-                    </h2>
-                    <p className="text-gray-600">
-                      Configurações gerais da plataforma
-                    </p>
-                  </div>
-                  <Button variant="outline" onClick={handleBackToDashboard}>
-                    Voltar ao Dashboard
-                  </Button>
-                </div>
-                <AdminSettingsAdvanced />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="support" className="space-y-0">
-              <AdminSupport onBackToDashboard={handleBackToDashboard} />
-            </TabsContent>
-          </div>
-        </Tabs>
+        {/* Conteúdo principal */}
+        <div className="mt-6">
+          {renderContent()}
+        </div>
       </div>
 
+      {/* Modais */}
       <ProductFormModal 
         open={showProductForm} 
         onOpenChange={setShowProductForm} 
