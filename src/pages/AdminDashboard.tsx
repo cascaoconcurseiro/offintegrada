@@ -21,11 +21,15 @@ import AdminDashboardHome from '@/components/admin/AdminDashboardHome';
 import AdminSupport from '@/components/admin/AdminSupport';
 import AdminReports from '@/components/admin/AdminReports';
 import CampaignFormModal from '@/components/admin/CampaignFormModal';
+import AdminAuditReport from '@/components/admin/AdminAuditReport';
+import NotificationSystem from '@/components/admin/NotificationSystem';
+import AdvancedAnalytics from '@/components/admin/AdvancedAnalytics';
+import AuditLogSystem from '@/components/admin/AuditLogSystem';
+import DataBackupSystem from '@/components/admin/DataBackupSystem';
+import UserPermissionSystem from '@/components/admin/UserPermissionSystem';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
-
-import AdminAuditReport from '@/components/admin/AdminAuditReport';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -82,7 +86,21 @@ const AdminDashboard = () => {
       <HeaderEnhanced />
       
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <AdminHeader onLogout={() => setIsAuthenticated(false)} onRefresh={() => handleTabChange('reports')} />
+        {/* Header com Sistema de Notificações */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-oswald font-bold uppercase tracking-wider">
+              Painel Administrativo
+            </h1>
+            <p className="text-gray-600">Sistema completo de gestão e-commerce</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <NotificationSystem />
+            <Button variant="outline" onClick={() => setIsAuthenticated(false)}>
+              Sair
+            </Button>
+          </div>
+        </div>
 
         <div className="mb-6">
           <AdminNavigationTabs activeTab={activeTab} onTabChange={handleTabChange} />
@@ -100,6 +118,86 @@ const AdminDashboard = () => {
 
             <TabsContent value="audit" className="space-y-0">
               <AdminAuditReport />
+            </TabsContent>
+
+            <TabsContent value="analytics" className="space-y-0">
+              <AdvancedAnalytics />
+            </TabsContent>
+
+            <TabsContent value="notifications" className="space-y-0">
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
+                      Central de Notificações
+                    </h2>
+                    <p className="text-gray-600">
+                      Sistema de notificações em tempo real
+                    </p>
+                  </div>
+                  <Button variant="outline" onClick={handleBackToDashboard}>
+                    Voltar ao Dashboard
+                  </Button>
+                </div>
+                <NotificationSystem />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="logs" className="space-y-0">
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
+                      Sistema de Logs
+                    </h2>
+                    <p className="text-gray-600">
+                      Auditoria e logs do sistema
+                    </p>
+                  </div>
+                  <Button variant="outline" onClick={handleBackToDashboard}>
+                    Voltar ao Dashboard
+                  </Button>
+                </div>
+                <AuditLogSystem />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="backup" className="space-y-0">
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
+                      Sistema de Backup
+                    </h2>
+                    <p className="text-gray-600">
+                      Backup automático e exportação de dados
+                    </p>
+                  </div>
+                  <Button variant="outline" onClick={handleBackToDashboard}>
+                    Voltar ao Dashboard
+                  </Button>
+                </div>
+                <DataBackupSystem />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="permissions" className="space-y-0">
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-oswald font-bold uppercase tracking-wider">
+                      Sistema de Permissões
+                    </h2>
+                    <p className="text-gray-600">
+                      Gerenciamento de usuários e permissões
+                    </p>
+                  </div>
+                  <Button variant="outline" onClick={handleBackToDashboard}>
+                    Voltar ao Dashboard
+                  </Button>
+                </div>
+                <UserPermissionSystem />
+              </div>
             </TabsContent>
 
             <TabsContent value="reports" className="space-y-0">

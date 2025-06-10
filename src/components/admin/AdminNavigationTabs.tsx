@@ -20,7 +20,11 @@ import {
   Headphones,
   Menu,
   ChevronDown,
-  Shield
+  Shield,
+  Bell,
+  Database,
+  Activity,
+  Lock
 } from 'lucide-react';
 
 interface AdminNavigationTabsProps {
@@ -34,6 +38,11 @@ const AdminNavigationTabs = ({ activeTab, onTabChange }: AdminNavigationTabsProp
   const tabs = [
     { value: "dashboard", label: "Dashboard", icon: Home },
     { value: "audit", label: "Auditoria", icon: Shield },
+    { value: "analytics", label: "Analytics", icon: Activity },
+    { value: "notifications", label: "Notificações", icon: Bell },
+    { value: "logs", label: "Logs", icon: Database },
+    { value: "backup", label: "Backup", icon: Database },
+    { value: "permissions", label: "Permissões", icon: Lock },
     { value: "reports", label: "Relatórios", icon: BarChart3 },
     { value: "products", label: "Produtos", icon: Package },
     { value: "orders", label: "Pedidos", icon: ShoppingCart },
