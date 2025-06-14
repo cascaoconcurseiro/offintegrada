@@ -1,12 +1,11 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+// Removed Input, Switch, and icon imports as they are now in child tab components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
-import { Upload, Video, Plus, Edit, Trash2, Globe, Eye, ShoppingCart, TrendingUp } from 'lucide-react';
-import type { Product, ProductVariant } from '@/types/product';
-import { categories, brands, sizes, colors } from '@/types/product'; // Import constants
+import type { Product, ProductVariant } from '@/types/product'; // ProductVariant might be needed if passing full variant to tabs
+// Removed specific constants like categories, brands as they are now in child tab components or product.ts
 import ProductFormBasicTab from './ProductFormBasicTab';
 import ProductFormMediaTab from './ProductFormMediaTab';
 import ProductFormVariantsTab from './ProductFormVariantsTab';
@@ -19,7 +18,6 @@ interface ProductFormWrapperProps {
   onOpenChange: (open: boolean) => void;
   selectedProduct: Product | null;
   onSubmit: () => void;
-  // Add other necessary props like form field values and handlers if form state is managed outside
 }
 
 const ProductFormWrapper: React.FC<ProductFormWrapperProps> = ({
@@ -32,9 +30,6 @@ const ProductFormWrapper: React.FC<ProductFormWrapperProps> = ({
     return null;
   }
 
-  // Most of the original form JSX from ProductManagement.tsx goes here.
-  // This includes the Tabs, TabsList, TabsTrigger, and all TabsContent sections.
-  // For brevity, I'll include a simplified structure. The full content should be moved here.
   return (
     <Card className="fixed inset-0 z-50 bg-white overflow-y-auto p-4 md:p-6 lg:p-8">
       <CardHeader>
