@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -62,17 +61,25 @@ const AdminReports = ({ onBackToDashboard }: AdminReportsProps) => {
     { label: 'Taxa Conversão', value: '3.24%', change: '+0.8%', color: 'text-green-600' }
   ];
 
+
   const handleGenerateReport = (type: string) => {
     toast({
       title: "Gerando relatório...",
-      description: `Relatório de ${type} será gerado em até 3 minutos.`,
+      description: `Relatório de ${type} será gerado em até 3 minutos. (Simulação)`,
     });
   };
 
   const handleQuickExport = () => {
     toast({
       title: "Exportação rápida",
-      description: "Dados exportados para Excel com sucesso!",
+      description: "Dados exportados para Excel com sucesso! (Simulação)",
+    });
+  };
+
+  const handleApplyDateFilter = () => {
+    toast({
+      title: "Filtro Aplicado",
+      description: `Filtro de data de ${dateRange.start} a ${dateRange.end} aplicado. (Simulação)`,
     });
   };
 
@@ -82,7 +89,7 @@ const AdminReports = ({ onBackToDashboard }: AdminReportsProps) => {
         title="Central de Relatórios Avançados"
         description="Analytics e relatórios executivos em tempo real"
         onBackToDashboard={onBackToDashboard}
-        onRefresh={() => toast({ title: "Dados atualizados!" })}
+        onRefresh={() => toast({ title: "Dados atualizados! (Simulação)" })}
       >
         <Button variant="outline" onClick={handleQuickExport}>
           <Download className="w-4 h-4 mr-2" />
@@ -137,7 +144,7 @@ const AdminReports = ({ onBackToDashboard }: AdminReportsProps) => {
                   onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
                 />
               </div>
-              <Button className="px-8">
+              <Button className="px-8" onClick={handleApplyDateFilter}>
                 <Eye className="w-4 h-4 mr-2" />
                 Aplicar Filtro
               </Button>

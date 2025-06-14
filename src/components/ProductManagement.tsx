@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,11 +11,7 @@ import {
   Edit, 
   Trash2, 
   Upload, 
-  Image, 
   Video, 
-  Tag, 
-  BarChart3,
-  Eye,
   Copy,
   Star,
   TrendingUp,
@@ -29,19 +24,8 @@ import {
   Download,
   Grid,
   List,
-  Zap,
-  Target,
-  Globe,
-  Palette,
-  Ruler,
-  Weight,
-  Box,
-  Calendar,
-  Clock,
-  Users,
-  Heart,
-  Share2,
-  MessageSquare
+  Eye,
+  Globe
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -109,7 +93,7 @@ const ProductManagement = () => {
   ]);
 
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   const categories = ['Regatas', 'Camisetas', 'Shorts', 'Jaquetas', 'Acessórios'];
   const brands = ['OFFSEASON', 'Nike', 'Adidas', 'Puma'];
@@ -121,12 +105,12 @@ const ProductManagement = () => {
     setSelectedProduct(null);
   };
 
-  const handleEditProduct = (product) => {
+  const handleEditProduct = (product: any) => {
     setSelectedProduct(product);
     setShowCreateForm(true);
   };
 
-  const handleDeleteProduct = (productId) => {
+  const handleDeleteProduct = (productId: number) => {
     setProducts(products.filter(p => p.id !== productId));
     toast({
       title: "Produto excluído",
@@ -134,7 +118,7 @@ const ProductManagement = () => {
     });
   };
 
-  const handleDuplicateProduct = (product) => {
+  const handleDuplicateProduct = (product: any) => {
     const newProduct = {
       ...product,
       id: Date.now(),
@@ -148,7 +132,7 @@ const ProductManagement = () => {
     });
   };
 
-  const toggleProductStatus = (productId) => {
+  const toggleProductStatus = (productId: number) => {
     setProducts(products.map(p => 
       p.id === productId 
         ? { ...p, status: p.status === 'active' ? 'inactive' : 'active' }
@@ -156,12 +140,34 @@ const ProductManagement = () => {
     ));
   };
 
-  const toggleFeatured = (productId) => {
+  const toggleFeatured = (productId: number) => {
     setProducts(products.map(p => 
       p.id === productId 
         ? { ...p, featured: !p.featured }
         : p
     ));
+  };
+
+  const handleImportCSV = () => {
+    toast({
+      title: "Importar CSV",
+      description: "Funcionalidade de importação de CSV ainda não implementada. (Simulação)",
+    });
+  };
+
+  const handleExportProducts = () => {
+    toast({
+      title: "Exportar Produtos",
+      description: "Funcionalidade de exportação de produtos ainda não implementada. (Simulação)",
+    });
+  };
+
+  const handleProductFormSubmit = () => {
+    setShowCreateForm(false);
+    toast({
+      title: selectedProduct ? "Produto Atualizado" : "Produto Criado",
+      description: `O produto foi ${selectedProduct ? 'atualizado' : 'criado'} com sucesso. (Simulação)`,
+    });
   };
 
   return (
@@ -176,11 +182,11 @@ const ProductManagement = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleImportCSV}>
             <Upload className="w-4 h-4 mr-2" />
             Importar CSV
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportProducts}>
             <Download className="w-4 h-4 mr-2" />
             Exportar
           </Button>
@@ -191,14 +197,13 @@ const ProductManagement = () => {
         </div>
       </div>
 
-      {/* Métricas de Produtos */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {[
           { name: 'Total Produtos', value: products.length.toString(), change: '+12', icon: Package },
           { name: 'Produtos Ativos', value: products.filter(p => p.status === 'active').length.toString(), change: '+8', icon: CheckCircle },
           { name: 'Estoque Baixo', value: products.filter(p => p.stock < 10).length.toString(), change: '-3', icon: AlertTriangle },
           { name: 'Mais Vendidos', value: products.filter(p => p.sales > 100).length.toString(), change: '+5', icon: TrendingUp },
-          { name: 'Receita Total', value: `R$ ${products.reduce((sum, p) => sum + parseFloat(p.revenue.replace('R$ ', '').replace('.', '').replace(',', '.')), 0).toLocaleString()}`, change: '+23%', icon: DollarSign }
+          { name: 'Receita Total', value: `R$ ${products.reduce((sum, p) => sum + parseFloat(p.revenue.replace('R$ ', '').replace(/\./g, '').replace(',', '.')), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, change: '+23%', icon: DollarSign }
         ].map((metric, index) => {
           const IconComponent = metric.icon;
           return (
@@ -218,7 +223,6 @@ const ProductManagement = () => {
         })}
       </div>
 
-      {/* Filtros e Busca */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-wrap gap-4 items-center">
@@ -263,7 +267,6 @@ const ProductManagement = () => {
         </CardContent>
       </Card>
 
-      {/* Lista/Grid de Produtos */}
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
@@ -417,22 +420,21 @@ const ProductManagement = () => {
         </Card>
       )}
 
-      {/* Formulário de Criação/Edição */}
       {showCreateForm && (
-        <Card className="fixed inset-0 z-50 bg-white overflow-y-auto">
+        <Card className="fixed inset-0 z-50 bg-white overflow-y-auto p-4 md:p-6 lg:p-8">
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle className="font-oswald">
                 {selectedProduct ? 'Editar Produto' : 'Novo Produto'}
               </CardTitle>
-              <Button variant="outline" onClick={() => setShowCreateForm(false)}>
+              <Button variant="ghost" size="sm" onClick={() => setShowCreateForm(false)}>
                 ×
               </Button>
             </div>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="basic" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-6">
+              <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
                 <TabsTrigger value="basic">Básico</TabsTrigger>
                 <TabsTrigger value="media">Mídia</TabsTrigger>
                 <TabsTrigger value="variants">Variações</TabsTrigger>
@@ -792,7 +794,7 @@ const ProductManagement = () => {
             </Tabs>
 
             <div className="flex gap-3 mt-8">
-              <Button className="flex-1">
+              <Button className="flex-1" onClick={handleProductFormSubmit}>
                 {selectedProduct ? 'Atualizar Produto' : 'Criar Produto'}
               </Button>
               <Button variant="outline" onClick={() => setShowCreateForm(false)}>
