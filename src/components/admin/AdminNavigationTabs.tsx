@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetDescription } from '@/components/ui/sheet'; // Adicionado SheetDescription
 import { 
   BarChart3, 
   Package, 
@@ -18,7 +18,7 @@ import {
   Users,
   Home,
   Headphones,
-  Menu, // Certifique-se que Menu está importado
+  Menu,
   ChevronDown,
   Shield,
   Bell,
@@ -39,7 +39,9 @@ const AdminNavigationTabs = ({ activeTab, onTabChange }: AdminNavigationTabsProp
     { value: "dashboard", label: "Dashboard", icon: Home },
     { value: "audit", label: "Auditoria", icon: Shield },
     { value: "analytics", label: "Analytics", icon: Activity },
-    { value: "notifications", label: "Notificações", icon: Bell },
+    // Removida a aba "notifications" daqui, pois NotificationSystem está no layout principal.
+    // Se for necessário ter uma aba específica de Notificações com mais detalhes, pode ser re-adicionada.
+    // { value: "notifications", label: "Notificações", icon: Bell }, 
     { value: "logs", label: "Logs", icon: Database },
     { value: "backup", label: "Backup", icon: Database },
     { value: "permissions", label: "Permissões", icon: Lock },
@@ -72,7 +74,7 @@ const AdminNavigationTabs = ({ activeTab, onTabChange }: AdminNavigationTabsProp
           <SheetTrigger asChild>
             <Button 
               variant="outline" 
-              className="w-full flex items-center justify-between md:w-auto md:min-w-[220px] px-4 py-2 text-sm" // Aumentei um pouco o min-w e garanti padding
+              className="w-full flex items-center justify-between md:w-auto md:min-w-[220px] px-4 py-2 text-sm"
             >
               <div className="flex items-center gap-2">
                 <Menu className="w-5 h-5" /> 
@@ -82,6 +84,8 @@ const AdminNavigationTabs = ({ activeTab, onTabChange }: AdminNavigationTabsProp
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-72 md:w-80 p-0">
+            {/* Adicionando SheetDescription para acessibilidade */}
+            <SheetDescription className="sr-only">Menu de navegação principal do painel administrativo.</SheetDescription>
             <div className="flex flex-col h-full">
               <div className="p-4 border-b">
                 <h3 className="text-lg font-semibold">Navegação Admin</h3>
