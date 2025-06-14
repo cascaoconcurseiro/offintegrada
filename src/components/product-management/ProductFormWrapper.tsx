@@ -2,10 +2,8 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-// Removed Input, Switch, and icon imports as they are now in child tab components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { Product, ProductVariant } from '@/types/product'; // ProductVariant might be needed if passing full variant to tabs
-// Removed specific constants like categories, brands as they are now in child tab components or product.ts
+import type { Product } from '@/types/product'; // Removed ProductVariant as it's used within ProductFormVariantsTab
 import ProductFormBasicTab from './ProductFormBasicTab';
 import ProductFormMediaTab from './ProductFormMediaTab';
 import ProductFormVariantsTab from './ProductFormVariantsTab';
@@ -58,7 +56,8 @@ const ProductFormWrapper: React.FC<ProductFormWrapperProps> = ({
           </TabsContent>
 
           <TabsContent value="media">
-            <ProductFormMediaTab />
+            {/* Assuming selectedProduct might be needed here eventually or passed down if forms are connected */}
+            <ProductFormMediaTab /* selectedProduct={selectedProduct} */ />
           </TabsContent>
           
           <TabsContent value="variants">
@@ -70,7 +69,8 @@ const ProductFormWrapper: React.FC<ProductFormWrapperProps> = ({
           </TabsContent>
 
           <TabsContent value="shipping">
-            <ProductFormShippingTab />
+            {/* Assuming selectedProduct might be needed here eventually or passed down if forms are connected */}
+            <ProductFormShippingTab /* selectedProduct={selectedProduct} */ />
           </TabsContent>
 
           <TabsContent value="analytics">
