@@ -2,7 +2,14 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sheet, SheetContent, SheetTrigger, SheetDescription } from '@/components/ui/sheet'; // Adicionado SheetDescription
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetTrigger, 
+  SheetDescription, 
+  SheetHeader, // Adicionado SheetHeader
+  SheetTitle    // Adicionado SheetTitle
+} from '@/components/ui/sheet'; 
 import { 
   BarChart3, 
   Package, 
@@ -39,9 +46,6 @@ const AdminNavigationTabs = ({ activeTab, onTabChange }: AdminNavigationTabsProp
     { value: "dashboard", label: "Dashboard", icon: Home },
     { value: "audit", label: "Auditoria", icon: Shield },
     { value: "analytics", label: "Analytics", icon: Activity },
-    // Removida a aba "notifications" daqui, pois NotificationSystem está no layout principal.
-    // Se for necessário ter uma aba específica de Notificações com mais detalhes, pode ser re-adicionada.
-    // { value: "notifications", label: "Notificações", icon: Bell }, 
     { value: "logs", label: "Logs", icon: Database },
     { value: "backup", label: "Backup", icon: Database },
     { value: "permissions", label: "Permissões", icon: Lock },
@@ -60,7 +64,8 @@ const AdminNavigationTabs = ({ activeTab, onTabChange }: AdminNavigationTabsProp
     { value: "support", label: "Suporte", icon: Headphones }
   ];
 
-  const activeTabData = tabs.find(tab => tab.value === activeTab);
+  // Removido activeTabData daqui, pois o label do botão será fixo.
+  // const activeTabData = tabs.find(tab => tab.value === activeTab);
 
   const handleTabClick = (tabValue: string) => {
     onTabChange(tabValue);
@@ -78,7 +83,8 @@ const AdminNavigationTabs = ({ activeTab, onTabChange }: AdminNavigationTabsProp
             >
               <div className="flex items-center gap-2">
                 <Menu className="w-5 h-5" /> 
-                <span>{activeTabData?.label || "Menu Principal"}</span>
+                {/* Texto do botão alterado para ser fixo */}
+                <span>Navegação Principal</span>
               </div>
               <ChevronDown className="w-4 h-4 opacity-70" />
             </Button>
@@ -87,9 +93,10 @@ const AdminNavigationTabs = ({ activeTab, onTabChange }: AdminNavigationTabsProp
             {/* Adicionando SheetDescription para acessibilidade */}
             <SheetDescription className="sr-only">Menu de navegação principal do painel administrativo.</SheetDescription>
             <div className="flex flex-col h-full">
-              <div className="p-4 border-b">
-                <h3 className="text-lg font-semibold">Navegação Admin</h3>
-              </div>
+              {/* Título do menu agora usa SheetHeader e SheetTitle */}
+              <SheetHeader className="p-4 border-b">
+                <SheetTitle className="text-lg font-semibold text-left">Navegação Admin</SheetTitle>
+              </SheetHeader>
               <ScrollArea className="flex-grow"> 
                 <div className="p-4 space-y-1">
                   {tabs.map((tab) => {
@@ -117,4 +124,3 @@ const AdminNavigationTabs = ({ activeTab, onTabChange }: AdminNavigationTabsProp
 };
 
 export default AdminNavigationTabs;
-
