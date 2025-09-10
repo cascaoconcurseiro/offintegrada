@@ -1,15 +1,11 @@
 
 import React from 'react';
 import HeaderEnhanced from '@/components/HeaderEnhanced';
-import HeroSection from '@/components/HeroSection';
+import EnhancedHeroSection from '@/components/enhanced/EnhancedHeroSection';
 import TrustIndicators from '@/components/TrustIndicators';
 import CategorySectionEnhanced from '@/components/CategorySectionEnhanced';
 import ProductShowcase from '@/components/ProductShowcase';
 import TechBanner from '@/components/TechBanner';
-import ProductGrid from '@/components/ProductGrid';
-import SmartRecommendations from '@/components/SmartRecommendations';
-import CustomerTestimonials from '@/components/CustomerTestimonials';
-import LookbookSection from '@/components/LookbookSection';
 import NewsletterSection from '@/components/NewsletterSection';
 import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
@@ -18,13 +14,22 @@ import UrgencyBanner from '@/components/UrgencyBanner';
 import FreeShippingBar from '@/components/FreeShippingBar';
 import SocialProof from '@/components/SocialProof';
 import UrgencyScarcity from '@/components/UrgencyScarcity';
+import { 
+  LazyProductGrid, 
+  LazySmartRecommendations, 
+  LazyCustomerTestimonials, 
+  LazyLookbookSection,
+  OptimizedSection,
+  GridSkeleton,
+  SectionSkeleton
+} from '@/components/enhanced/PerformanceOptimizer';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-subtle">
       <SEOHead 
         title="OFFSEASON - Roupas Fitness Premium | Supere Seus Limites"
-        description="Descubra a coleção premium OFFSEASON. Roupas fitness que combinam performance e estilo para quem busca excelência em cada movimento."
+        description="Descubra a coleção premium OFFSEASON. Roupas fitness que combinam performance excepcional e estilo incomparável para quem busca a excelência."
         keywords="roupas fitness, academia, musculação, performance, premium, offseason, regatas, camisetas, shorts"
       />
       
@@ -32,52 +37,84 @@ const Index = () => {
       <FreeShippingBar />
       <HeaderEnhanced />
       
-      <ErrorBoundary fallback={<div className="h-96 bg-gray-100 flex items-center justify-center">Erro ao carregar seção</div>}>
-        <HeroSection />
+      <ErrorBoundary fallback={<div className="h-96 bg-muted flex items-center justify-center animate-fade-in">Erro ao carregar seção</div>}>
+        <EnhancedHeroSection />
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <TrustIndicators />
+        <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <TrustIndicators />
+        </div>
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <CategorySectionEnhanced />
+        <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <CategorySectionEnhanced />
+        </div>
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <ProductShowcase />
+        <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <ProductShowcase />
+        </div>
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <TechBanner />
+        <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <TechBanner />
+        </div>
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <ProductGrid />
+        <div className="animate-fade-in" style={{ animationDelay: '0.5s' }}>
+          <OptimizedSection fallback={<GridSkeleton />}>
+            <LazyProductGrid />
+          </OptimizedSection>
+        </div>
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <SmartRecommendations type="trending" />
+        <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <OptimizedSection fallback={<SectionSkeleton />}>
+            <LazySmartRecommendations type="trending" />
+          </OptimizedSection>
+        </div>
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <SocialProof />
+        <div className="animate-fade-in" style={{ animationDelay: '0.7s' }}>
+          <SocialProof />
+        </div>
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <CustomerTestimonials />
+        <div className="animate-fade-in" style={{ animationDelay: '0.8s' }}>
+          <OptimizedSection fallback={<SectionSkeleton />}>
+            <LazyCustomerTestimonials />
+          </OptimizedSection>
+        </div>
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <SmartRecommendations type="personalized" />
+        <div className="animate-fade-in" style={{ animationDelay: '0.9s' }}>
+          <OptimizedSection fallback={<SectionSkeleton />}>
+            <LazySmartRecommendations type="personalized" />
+          </OptimizedSection>
+        </div>
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <LookbookSection />
+        <div className="animate-fade-in" style={{ animationDelay: '1s' }}>
+          <OptimizedSection fallback={<SectionSkeleton />}>
+            <LazyLookbookSection />
+          </OptimizedSection>
+        </div>
       </ErrorBoundary>
       
       <ErrorBoundary>
-        <NewsletterSection />
+        <div className="animate-fade-in" style={{ animationDelay: '1.1s' }}>
+          <NewsletterSection />
+        </div>
       </ErrorBoundary>
       
       <Footer />

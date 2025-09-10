@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -27,7 +27,7 @@ const buttonVariants = cva(
         "gradient-accent":
           "bg-gradient-accent text-accent-red-foreground shadow-lg hover:shadow-xl hover:shadow-primary/20 hover:scale-105 active:scale-95 font-semibold",
         glow:
-          "bg-accent-red text-accent-red-foreground shadow-lg hover:shadow-glow hover:scale-105 active:scale-95 font-semibold",
+          "bg-accent-red text-accent-red-foreground shadow-lg hover:shadow-glow hover:scale-105 active:scale-95 font-semibold animate-pulse-glow",
         premium:
           "bg-gradient-to-r from-primary via-primary-light to-accent-red text-primary-foreground shadow-xl border border-accent-red/20 hover:shadow-2xl hover:border-accent-red/40 hover:scale-105 active:scale-95 font-bold",
         glass:
